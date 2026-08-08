@@ -21,8 +21,9 @@ Your feedback loop is:
 python3 -m unittest discover -s tests -t .
 ```
 
-Three tests fail to begin with, one per exercise, and each says which. Anything
-else failing means the solver is broken rather than unfinished.
+The failures to begin with are all in `tests/test_exercises.py`, one per
+exercise, each naming what is still unjustified. Anything else failing means
+the solver is broken rather than unfinished.
 
 ## Before you start
 
@@ -53,7 +54,7 @@ reason is reverse unit propagation: assume the value is still there, and the
 selector atoms fall over one at a time until the row saying *some* tuple is in
 use is contradicted.
 
-Replace the two `Assert(...)` with `Rup()`.
+Replace the two `Assert(...)` with `Rup()`, and make `two-tables` verify.
 
 That is the whole exercise, and it is one word, so spend the time you saved on
 this: **try the same thing in `int_lin_le`.** Replace its `Pol(...)` with

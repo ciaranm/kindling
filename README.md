@@ -50,8 +50,10 @@ instead of `VERIFIED`, and the exercises are to replace them one at a time.
 python3 -m unittest discover -s tests -t .
 ```
 
-Three tests fail on a fresh clone, one per exercise, and they say which. If
-anything *else* fails you have broken the solver rather than not finished yet.
+On a fresh clone the only failures are in `tests/test_exercises.py`: one per
+exercise, each naming what is still unjustified, plus one for everything that
+is waiting on all three. If anything *else* fails, you have broken the solver
+rather than not finished yet.
 
 Solutions are on the `ash` branch.
 
