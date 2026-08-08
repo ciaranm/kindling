@@ -1,37 +1,55 @@
 """Why an inference is allowed.
 
-Every narrowing of a domain has to say why, because every narrowing turns into
-a line of the proof and a line of the proof has to be checkable.  The argument
-is passed in rather than worked out afterwards: by the time the domain has
-changed, the reason it changed is gone.
+Every narrowing of a domain has to say why, because every narrowing becomes a
+line of the proof and a line of the proof has to be checkable.
 
-A justification has two halves.  The *reason* is the list of atoms that were
-already true and that forced the inference; together with the inferred atom it
-makes a clause, "if all of these held then that one holds", and that clause is
-true at the root of the search and not just at the node that noticed it.  The
-rest of the justification says how a checker should be persuaded of the clause.
+What gets logged is a clause: "if all the guesses that got us to this node
+hold, then this atom holds too".  That is true at the root of the search and
+not only at the node that noticed it, which is what makes it safe to leave
+lying around -- nothing is ever retracted, so kindling has no deletion in it
+anywhere.
 
-Right now there is one way, and it is the dishonest one.  Assert says "take my
-word for it" and comes out as veripb's `a` rule, so the proof is structurally
-complete and the checker confirms everything except the assertions themselves,
-reporting UNDER ASSERTIONS rather than VERIFIED.  Note that the constraint an
-Assert claims is exactly the constraint a real derivation would have to
-produce, so turning one into the other changes a single word and nothing else.
-That is what the exercises are.
+Using the guesses is the crude option, and it is always available.  A real
+solver states a *reason* instead: the handful of atoms the propagator actually
+looked at, which is usually far fewer than every guess made on the way here.
+Both are valid.  What makes the line legal is that reverse unit propagation can
+get from the left-hand side to the right-hand side, and the guesses always
+suffice for that, because between them they determine the whole node.
+
+The reason version is worth knowing about even though kindling does not do it,
+because it is the same clause a lazy clause generation solver has to produce to
+explain a propagation, and it is better for the same reasons: the proof is
+smaller, the checker's replay is shorter, and in an LCG solver it is what makes
+the learnt clause worth learning.  On the too-small instance, the same
+refutation logged with guesses spends 4558 literals across its 422 clause
+bodies, and with real reasons it spends 2895.  Working the reason out is real
+work though, and it is work about propagators rather than about proofs, so
+kindling spends the space and keeps the attention on the derivations.
+
+There is a second thing the crude option buys.  A reason can be *wrong* -- cite
+too little and the clause is not implied by anything, and since an asserted
+line is checked by nobody the mistake surfaces much later, as a derivation that
+cannot be made to produce it.  Guesses are read off the state rather than
+worked out, so that whole class of mistake does not exist, and the only way a
+logged line can fail is if its derivation is wrong.  Which is exactly the thing
+the exercises are about.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
 class Assert:
-    """Not checked.  The name is carried into the proof as an annotation so
-    that the burn-down tool can say what is left to do."""
+    """Not checked.  Comes out as veripb's `a` rule, so the proof is
+    structurally complete and the checker confirms everything except the
+    assertions themselves, reporting UNDER ASSERTIONS rather than VERIFIED.
+
+    The name is carried into the proof as an annotation, so that the burn-down
+    can say what is left to do."""
 
     name: str
-    reason: tuple[str, ...] = field(default=())
 
 
 Justification = Assert  # stage 4 widens this to Assert | Rup | Pol

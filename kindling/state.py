@@ -104,7 +104,7 @@ class State:
         """This node cannot lead to a solution."""
         # The line that closes the node is written by the search, not here;
         # what a propagator owes is whatever makes that line checkable.
-        self.log.failed(because)
+        self.log.failed(because, self.decisions)
         return Inference.CONTRADICTION
 
     def _narrowed(
@@ -116,7 +116,7 @@ class State:
             # Saying CHANGED when nothing changed would let propagation loop
             # forever, so this has to be honest.
             return Inference.NO_CHANGE
-        self.log.infer(atom, because)
+        self.log.infer(atom, because, self.decisions)
         self.changed.add(x.index)
         if self.domain(x).is_empty():
             return Inference.CONTRADICTION

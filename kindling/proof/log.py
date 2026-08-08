@@ -2,10 +2,12 @@
 
 The proof has two kinds of line in it and they have very different characters.
 
-Propagators contribute *implications*: "if these atoms held then this one
-holds".  Those are true at the root of the search, not just at the node that
-noticed them, which is what makes them safe to leave lying around -- nothing
-ever has to be retracted, so there is no deletion anywhere in kindling.
+Propagators contribute *implications*: "if the guesses that got us here all
+held, then this atom holds".  Those are true at the root of the search, not
+just at the node that noticed them, which is what makes them safe to leave
+lying around -- nothing ever has to be retracted, so there is no deletion
+anywhere in kindling.  See justify.py for why the guesses, and what a real
+solver would say instead.
 
 The search contributes one line per failed node, negating the decisions that
 led to it.  That line is reverse unit propagation every time and needs no help
@@ -34,15 +36,15 @@ def clause(literals) -> str:
     return f"{terms} >= 1".lstrip()
 
 
-def inference_clause(atom: str, because) -> list[str]:
-    """"if the reason held then this atom holds", as a disjunction."""
-    return [neg(r) for r in because.reason] + [atom]
+def inference_clause(atom: str, guesses) -> list[str]:
+    """"if the guesses all held then this atom holds", as a disjunction."""
+    return [neg(g) for g in guesses] + [atom]
 
 
-def failure_clause(because) -> list[str]:
-    """"the reason cannot all hold at once", as a disjunction.  A failure has
+def failure_clause(guesses) -> list[str]:
+    """"the guesses cannot all hold at once", as a disjunction.  A failure has
     no inferred atom, so this is the same thing with nothing on the end."""
-    return [neg(r) for r in because.reason]
+    return [neg(g) for g in guesses]
 
 
 class NoProof:
@@ -56,10 +58,10 @@ class NoProof:
     def preamble(self, model: Model) -> None:
         pass
 
-    def infer(self, atom: str, because) -> None:
+    def infer(self, atom: str, because, guesses) -> None:
         pass
 
-    def failed(self, because) -> None:
+    def failed(self, because, guesses) -> None:
         pass
 
     def node_failed(self, decisions) -> None:
@@ -99,13 +101,13 @@ class ProofLog(NoProof):
             self.write(f"@atleast{x.index} pol {' '.join(steps)} ;")
         self.comment()
 
-    def infer(self, atom: str, because) -> None:
-        """One propagation: the reason held, so this atom holds too."""
-        self.emit(inference_clause(atom, because), because)
+    def infer(self, atom: str, because, guesses) -> None:
+        """One propagation: the guesses hold, so this atom holds too."""
+        self.emit(inference_clause(atom, guesses), because)
 
-    def failed(self, because) -> None:
+    def failed(self, because, guesses) -> None:
         """A propagator says this node is hopeless."""
-        self.emit(failure_clause(because), because)
+        self.emit(failure_clause(guesses), because)
 
     def emit(self, literals, because) -> None:
         if isinstance(because, Assert):
