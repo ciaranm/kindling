@@ -21,18 +21,16 @@ HAVE_VERIPB = shutil.which("veripb") is not None
 
 def pigeonhole() -> Model:
     model = Model()
-    for i in range(4):
-        model.add_variable(2, f"pigeon{i}")
-    model.add_constraint(AllDifferentInt([1, 2, 3, 4]))
+    pigeons = [model.add_variable(2, f"pigeon{i}") for i in range(4)]
+    model.add_constraint(AllDifferentInt(pigeons))
     return model
 
 
 def table_and_all_different() -> Model:
     model = Model()
-    model.add_variable(1)
-    model.add_variable(1)
-    model.add_constraint(TableInt([1, 2], [(0, 0), (1, 1)]))
-    model.add_constraint(AllDifferentInt([1, 2]))
+    a, b = model.add_variable(1), model.add_variable(1)
+    model.add_constraint(TableInt([a, b], [(0, 0), (1, 1)]))
+    model.add_constraint(AllDifferentInt([a, b]))
     return model
 
 
@@ -158,20 +156,21 @@ class TestModel(unittest.TestCase):
             Model().add_variable(-1)
 
     def test_coefficients_other_than_plus_or_minus_one_are_refused(self):
-        with self.assertRaisesRegex(ValueError, "one of the exercises"):
-            IntLinLe([2], [1], 3)
-
-    def test_constraints_must_refer_to_variables_that_exist(self):
         model = Model()
-        model.add_variable(3)
-        with self.assertRaisesRegex(ValueError, "unknown variable x2"):
-            model.add_constraint(AllDifferentInt([1, 2]))
+        with self.assertRaisesRegex(ValueError, "one of the exercises"):
+            IntLinLe([2], [model.add_variable(3)], 3)
+
+    def test_constraints_must_refer_to_this_models_variables(self):
+        model, other = Model(), Model()
+        a = model.add_variable(3)
+        stranger = other.add_variable(3)
+        with self.assertRaisesRegex(ValueError, "does not belong to this model"):
+            model.add_constraint(AllDifferentInt([a, stranger]))
 
     def test_a_tuple_outside_the_domains_is_killed_not_dropped(self):
         model = Model()
-        model.add_variable(1)
-        model.add_variable(1)
-        model.add_constraint(TableInt([1, 2], [(0, 0), (1, 9)]))
+        a, b = model.add_variable(1), model.add_variable(1)
+        model.add_constraint(TableInt([a, b], [(0, 0), (1, 9)]))
         labels = [row.label for row in define_proof_model(model).rows()]
         self.assertIn("tbl1t1_dead", labels)
 

@@ -102,5 +102,5 @@ def define_proof_model(model) -> OpbFile:
         define_variable(opb, var.index, var.ub, var.name)
     for constraint in model.constraints:
         opb.comment()
-        constraint.define_proof_model(opb, model)
+        constraint.define_proof_model(opb)
     return opb

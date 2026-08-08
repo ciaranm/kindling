@@ -22,6 +22,10 @@ class Variable:
             raise ValueError(f"{self.name}: kindling has no negative domains")
 
 
+    def __repr__(self) -> str:
+        return f"x{self.index}"
+
+
 class Constraint:
     """Base class.  Each subclass lives in its own file under constraints/ and
     holds everything about that constraint: how it is written into the OPB
@@ -29,12 +33,17 @@ class Constraint:
 
     index: int  # 1-based, assigned by Model.add_constraint
 
-    def variables(self) -> list[int]:
-        """The variable indices this constraint talks about."""
+    def variables(self) -> list[Variable]:
+        """The variables this constraint talks about."""
         raise NotImplementedError
 
-    def define_proof_model(self, opb, model: Model) -> None:
+    def define_proof_model(self, opb) -> None:
         """Write the rows that say what this constraint means."""
+        raise NotImplementedError
+
+    def propagate(self, state):
+        """Narrow domains as far as this constraint can see how to, giving a
+        justification for each narrowing.  Returns an Inference."""
         raise NotImplementedError
 
 
@@ -43,21 +52,16 @@ class Model:
     variables: list[Variable] = field(default_factory=list)
     constraints: list[Constraint] = field(default_factory=list)
 
-    def add_variable(self, ub: int, name: str = "") -> int:
+    def add_variable(self, ub: int, name: str = "") -> Variable:
         index = len(self.variables) + 1
-        self.variables.append(Variable(index, ub, name or f"x{index}"))
-        return index
+        variable = Variable(index, ub, name or f"x{index}")
+        self.variables.append(variable)
+        return variable
 
     def add_constraint(self, constraint: Constraint) -> Constraint:
         constraint.index = len(self.constraints) + 1
-        for i in constraint.variables():
-            if not 1 <= i <= len(self.variables):
-                raise ValueError(f"constraint refers to unknown variable x{i}")
+        for x in constraint.variables():
+            if self.variables[x.index - 1] is not x:
+                raise ValueError(f"{x} does not belong to this model")
         self.constraints.append(constraint)
         return constraint
-
-    def variable(self, index: int) -> Variable:
-        return self.variables[index - 1]
-
-    def ub(self, index: int) -> int:
-        return self.variables[index - 1].ub

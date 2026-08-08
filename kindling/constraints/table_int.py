@@ -11,13 +11,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..model import Constraint
+from ..justify import Assert
+from ..model import Constraint, Variable
 from ..proof.names import eq, neg, selector
+from ..state import Inference
 
 
 @dataclass
 class TableInt(Constraint):
-    scope: list[int]  # variable indices
+    scope: list[Variable]
     tuples: list[tuple[int, ...]]
     index: int = field(default=0)
 
@@ -28,12 +30,12 @@ class TableInt(Constraint):
         if not self.tuples:
             raise ValueError("table_int: no tuples, which is just a failure")
 
-    def variables(self) -> list[int]:
+    def variables(self) -> list[Variable]:
         return list(self.scope)
 
-    def define_proof_model(self, opb, model) -> None:
+    def define_proof_model(self, opb) -> None:
         opb.comment(
-            f"table({', '.join(f'x{i}' for i in self.scope)}) "
+            f"table({', '.join(str(x) for x in self.scope)}) "
             f"with {len(self.tuples)} tuples"
         )
         opb.constraint(
@@ -44,13 +46,40 @@ class TableInt(Constraint):
         )
         for j, values in enumerate(self.tuples):
             sel = selector(self.index, j)
-            if any(v > model.ub(i) for i, v in zip(self.scope, values)):
+            if any(v > x.ub for x, v in zip(self.scope, values)):
                 # A value no variable can take.  Rather than dropping the tuple
                 # and quietly changing the model, say that it is unusable.
                 opb.comment(f"tuple {j} = {values} is outside the domains")
                 opb.constraint(f"tbl{self.index}t{j}_dead", [(1, neg(sel))], ">=", 1)
                 continue
-            for i, v in zip(self.scope, values):
+            for x, v in zip(self.scope, values):
                 opb.constraint(
-                    f"tbl{self.index}t{j}_{i}", [(1, neg(sel)), (1, eq(i, v))], ">=", 1
+                    f"tbl{self.index}t{j}_{x.index}",
+                    [(1, neg(sel)), (1, eq(x.index, v))],
+                    ">=",
+                    1,
                 )
+
+    def propagate(self, state) -> Inference:
+        # A value survives if some tuple that is still possible uses it.
+        supported: list[set[int]] = [set() for _ in self.scope]
+        possible = 0
+        for values in self.tuples:
+            if all(v in state.domain(x) for x, v in zip(self.scope, values)):
+                possible += 1
+                for position, v in enumerate(values):
+                    supported[position].add(v)
+
+        if possible == 0:
+            return state.fail(Assert("table_no_tuple"))
+
+        result = Inference.NO_CHANGE
+        for position, x in enumerate(self.scope):
+            for v in list(state.domain(x)):
+                if v not in supported[position]:
+                    result = max(
+                        result, state.remove(x, v, Assert("table_support"))
+                    )
+                    if result is Inference.CONTRADICTION:
+                        return result
+        return result
