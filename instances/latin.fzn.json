@@ -1,0 +1,287 @@
+{
+ "arrays": {
+  "X_INTRODUCED_16_": {
+   "a": [
+    "X_INTRODUCED_17_",
+    "X_INTRODUCED_18_",
+    "X_INTRODUCED_19_",
+    "X_INTRODUCED_20_",
+    "X_INTRODUCED_21_",
+    "X_INTRODUCED_22_",
+    "X_INTRODUCED_23_",
+    "X_INTRODUCED_24_",
+    "X_INTRODUCED_25_",
+    "X_INTRODUCED_26_",
+    "X_INTRODUCED_27_",
+    "X_INTRODUCED_28_",
+    "X_INTRODUCED_29_",
+    "X_INTRODUCED_30_",
+    "X_INTRODUCED_31_",
+    "X_INTRODUCED_32_"
+   ]
+  },
+  "X_INTRODUCED_33_": {
+   "a": [
+    "X_INTRODUCED_17_",
+    "X_INTRODUCED_18_",
+    "X_INTRODUCED_19_",
+    "X_INTRODUCED_20_"
+   ]
+  },
+  "X_INTRODUCED_34_": {
+   "a": [
+    "X_INTRODUCED_21_",
+    "X_INTRODUCED_22_",
+    "X_INTRODUCED_23_",
+    "X_INTRODUCED_24_"
+   ]
+  },
+  "X_INTRODUCED_35_": {
+   "a": [
+    "X_INTRODUCED_25_",
+    "X_INTRODUCED_26_",
+    "X_INTRODUCED_27_",
+    "X_INTRODUCED_28_"
+   ]
+  },
+  "X_INTRODUCED_36_": {
+   "a": [
+    "X_INTRODUCED_29_",
+    "X_INTRODUCED_30_",
+    "X_INTRODUCED_31_",
+    "X_INTRODUCED_32_"
+   ]
+  },
+  "X_INTRODUCED_37_": {
+   "a": [
+    "X_INTRODUCED_17_",
+    "X_INTRODUCED_21_",
+    "X_INTRODUCED_25_",
+    "X_INTRODUCED_29_"
+   ]
+  },
+  "X_INTRODUCED_38_": {
+   "a": [
+    "X_INTRODUCED_18_",
+    "X_INTRODUCED_22_",
+    "X_INTRODUCED_26_",
+    "X_INTRODUCED_30_"
+   ]
+  },
+  "X_INTRODUCED_39_": {
+   "a": [
+    "X_INTRODUCED_19_",
+    "X_INTRODUCED_23_",
+    "X_INTRODUCED_27_",
+    "X_INTRODUCED_31_"
+   ]
+  },
+  "X_INTRODUCED_40_": {
+   "a": [
+    "X_INTRODUCED_20_",
+    "X_INTRODUCED_24_",
+    "X_INTRODUCED_28_",
+    "X_INTRODUCED_32_"
+   ]
+  }
+ },
+ "constraints": [
+  {
+   "args": [
+    "X_INTRODUCED_33_"
+   ],
+   "id": "fzn_all_different_int"
+  },
+  {
+   "args": [
+    "X_INTRODUCED_34_"
+   ],
+   "id": "fzn_all_different_int"
+  },
+  {
+   "args": [
+    "X_INTRODUCED_35_"
+   ],
+   "id": "fzn_all_different_int"
+  },
+  {
+   "args": [
+    "X_INTRODUCED_36_"
+   ],
+   "id": "fzn_all_different_int"
+  },
+  {
+   "args": [
+    "X_INTRODUCED_37_"
+   ],
+   "id": "fzn_all_different_int"
+  },
+  {
+   "args": [
+    "X_INTRODUCED_38_"
+   ],
+   "id": "fzn_all_different_int"
+  },
+  {
+   "args": [
+    "X_INTRODUCED_39_"
+   ],
+   "id": "fzn_all_different_int"
+  },
+  {
+   "args": [
+    "X_INTRODUCED_40_"
+   ],
+   "id": "fzn_all_different_int"
+  }
+ ],
+ "solve": {
+  "method": "satisfy"
+ },
+ "variables": {
+  "X_INTRODUCED_17_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_18_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_19_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_20_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_21_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_22_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_23_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_24_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_25_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_26_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_27_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_28_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_29_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_30_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_31_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_32_": {
+   "domain": [
+    [
+     0,
+     3
+    ]
+   ],
+   "type": "int"
+  }
+ }
+}

@@ -1,0 +1,3 @@
+output ["task = ",showDzn(task),";\n","budget = ",showDzn(budget),";\n"];
+int: budget;
+array [1..3] of int: task;

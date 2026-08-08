@@ -1,0 +1,61 @@
+{
+ "arrays": {
+  "pigeon": {
+   "a": [
+    "X_INTRODUCED_16_",
+    "X_INTRODUCED_17_",
+    "X_INTRODUCED_18_",
+    "X_INTRODUCED_19_"
+   ]
+  }
+ },
+ "constraints": [
+  {
+   "args": [
+    "pigeon"
+   ],
+   "id": "fzn_all_different_int"
+  }
+ ],
+ "solve": {
+  "method": "satisfy"
+ },
+ "variables": {
+  "X_INTRODUCED_16_": {
+   "domain": [
+    [
+     0,
+     2
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_17_": {
+   "domain": [
+    [
+     0,
+     2
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_18_": {
+   "domain": [
+    [
+     0,
+     2
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_19_": {
+   "domain": [
+    [
+     0,
+     2
+    ]
+   ],
+   "type": "int"
+  }
+ }
+}

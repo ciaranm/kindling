@@ -1,10 +1,18 @@
 """python3 -m kindling <instance> [--prove <name>]
 
-The instances are built in for now; reading them from a file comes later.
+An instance is either the name of one of the built-in ones below, or the path
+to a .fzn.json file that MiniZinc flattened (see instances/ and tools/).
 With --prove, writes <name>.opb and <name>.pbp, which veripb will check:
 
     python3 -m kindling pigeonhole --prove /tmp/ph
+    python3 -m kindling instances/agreement.fzn.json --prove /tmp/ag
     veripb /tmp/ph.opb /tmp/ph.pbp
+
+The built-in ones are here rather than in instances/ on purpose.  Several of
+them are shaped to make a particular justification earn its keep, and MiniZinc
+would flatten that shape away -- it folds a bound into a variable's domain, and
+a bound that arrives declared rather than derived does not need justifying.
+The ones in instances/ are for modelling; these are for keeping us honest.
 """
 
 from __future__ import annotations
@@ -17,6 +25,7 @@ from .constraints.all_different_int import AllDifferentInt
 from .constraints.int_lin_le import IntLinLe
 from .constraints.table_int import TableInt
 from .model import Model
+from . import fzn
 from .proof.encoding import define_proof_model
 from .proof.log import ProofLog
 from .search import solve
@@ -146,11 +155,26 @@ INSTANCES = {
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="kindling")
-    parser.add_argument("instance", choices=sorted(INSTANCES))
+    parser.add_argument(
+        "instance", help=f"a .fzn.json file, or one of: {', '.join(sorted(INSTANCES))}"
+    )
     parser.add_argument("--prove", metavar="NAME", help="write NAME.opb and NAME.pbp")
     args = parser.parse_args(argv)
 
-    model = INSTANCES[args.instance]()
+    if args.instance in INSTANCES:
+        model = INSTANCES[args.instance]()
+    elif pathlib.Path(args.instance).exists():
+        try:
+            model = fzn.read(args.instance)
+        except fzn.Unsupported as complaint:
+            # Not a traceback: this is a thing about the model, not a crash.
+            print(f"{args.instance}: {complaint}", file=sys.stderr)
+            return 2
+    else:
+        parser.error(
+            f"{args.instance} is neither a file nor one of "
+            f"{', '.join(sorted(INSTANCES))}"
+        )
 
     if args.prove is None:
         solution = solve(model)

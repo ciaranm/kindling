@@ -1,0 +1,56 @@
+{
+ "arrays": {
+  "X_INTRODUCED_19_": {
+   "a": [
+    0,
+    0,
+    1,
+    1
+   ]
+  },
+  "x": {
+   "a": [
+    "X_INTRODUCED_16_",
+    "X_INTRODUCED_17_"
+   ]
+  }
+ },
+ "constraints": [
+  {
+   "args": [
+    "x",
+    "X_INTRODUCED_19_"
+   ],
+   "id": "fzn_table_int"
+  },
+  {
+   "args": [
+    "x"
+   ],
+   "id": "fzn_all_different_int"
+  }
+ ],
+ "solve": {
+  "method": "satisfy"
+ },
+ "variables": {
+  "X_INTRODUCED_16_": {
+   "domain": [
+    [
+     0,
+     1
+    ]
+   ],
+   "type": "int"
+  },
+  "X_INTRODUCED_17_": {
+   "domain": [
+    [
+     0,
+     1
+    ]
+   ],
+   "type": "int"
+  }
+ }
+}

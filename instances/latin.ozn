@@ -1,0 +1,4 @@
+output ["square = \n",let {array [int] of string: X_INTRODUCED_43_ = [], array [int] of string: X_INTRODUCED_44_ = [], array [int,int] of string: X_INTRODUCED_45_ = [(X_INTRODUCED_41_, X_INTRODUCED_42_) : showDzn(square[X_INTRODUCED_41_,X_INTRODUCED_42_]) | X_INTRODUCED_41_ in index_set_1of2(square), X_INTRODUCED_42_ in index_set_2of2(square)]} in (show2d_indexed(X_INTRODUCED_43_,X_INTRODUCED_44_,X_INTRODUCED_45_)),";\n"];
+int: n = 4;
+array [1..16] of int: X_INTRODUCED_16_;
+array [1..n,1..n] of int: square = array2d(1..4,1..4,X_INTRODUCED_16_);

@@ -1,0 +1,3 @@
+output ["pigeon = ",showDzn(pigeon),";\n"];
+int: pigeons = 4;
+array [1..pigeons] of int: pigeon;
