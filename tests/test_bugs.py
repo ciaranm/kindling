@@ -1,17 +1,19 @@
 """The deliberately broken propagators, and what the checker makes of them.
 
 This is the demonstration the whole module is for, so it had better keep
-working.  Each bug has to be caught somewhere, and the interesting part is that
-*where* differs, in ways that say something true about what proof logging does
-and does not do for you.
+working.  It comes after the exercises -- a broken propagator is only
+interesting once the working ones are justified -- so these skip until then.
+
+Each bug has to be caught somewhere, and the interesting part is that *where*
+differs, in ways that say something true about what proof logging does and does
+not do for you.
 """
 
-import shutil
 import subprocess
 import sys
 import unittest
 
-REQUIRED = shutil.which("veripb") is not None
+from tests.test_proof_end_to_end import EXERCISES_DONE, FINISH_FIRST
 
 
 def run(instance: str, bug: str) -> tuple[str, str]:
@@ -36,7 +38,7 @@ def run(instance: str, bug: str) -> tuple[str, str]:
     return answer, f"?? {text[:200]}"
 
 
-@unittest.skipUnless(REQUIRED, "veripb is not on the path")
+@unittest.skipUnless(EXERCISES_DONE, FINISH_FIRST)
 class TestBugsAreCaught(unittest.TestCase):
     def test_an_unsound_propagator_loses_the_only_solution_and_is_caught(self):
         """puzzle has exactly one solution and it sits on the edge of all three

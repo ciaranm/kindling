@@ -114,7 +114,23 @@ class TestRandomRefutations(unittest.TestCase):
         self.assertGreater(refuted, 20, "hardly any of these were unsatisfiable")
 
 
-@unittest.skipUnless(HAVE_VERIPB, "veripb is not on the path")
+def exercises_are_done() -> bool:
+    """Whether every inference is justified yet.  Several things below only
+    make sense once they are: you cannot check that a derivation has to be
+    right while it is still being asserted."""
+    if not HAVE_VERIPB:
+        return False
+    return not any(
+        prove(INSTANCES[name]())[3].assertions
+        for name in ("pigeonhole", "agreement", "over-budget")
+    )
+
+
+EXERCISES_DONE = exercises_are_done()
+FINISH_FIRST = "finish the exercises first (see docs/practical.md)"
+
+
+@unittest.skipUnless(EXERCISES_DONE, FINISH_FIRST)
 class TestTheWrongAnswerFails(unittest.TestCase):
     """An exercise nobody can fail is not an exercise.
 
