@@ -10,7 +10,9 @@ Run them with
 
     python3 -m unittest discover -s tests -t .
 
-An exercise is done when its instance verifies with nothing asserted.  Watch
+Each exercise has an instance that uses only the constraint it is about, so a
+failure names one thing and not three.  An exercise is done when its instance
+verifies with nothing asserted.  Watch
 for UNDER ASSERTIONS rather than REJECTED: the first means the proof is
 structurally fine and something in it has not been justified yet, the second
 means something in it is wrong.
@@ -33,8 +35,10 @@ class TestExercises(unittest.TestCase):
             f"the proof of {instance} was rejected, which means something is "
             f"wrong rather than missing:\n{verdict}",
         )
+        # Compare the kinds rather than the whole list, so that a failure is
+        # one readable line instead of a diff of four hundred identical strings.
         self.assertEqual(
-            log.assertions,
+            sorted(set(log.assertions)),
             [],
             f"{exercise}: {instance} still asserts "
             + ", ".join(sorted(set(log.assertions))),
@@ -42,7 +46,7 @@ class TestExercises(unittest.TestCase):
         self.assertEqual(verdict, "s VERIFIED UNSATISFIABLE")
 
     def test_exercise_1_table_support_removal_is_justified(self):
-        self.verifies("agreement", "exercise 1")
+        self.verifies("two-tables", "exercise 1")
 
     def test_exercise_2_negative_coefficients_are_justified(self):
         self.verifies("over-budget", "exercise 2")
@@ -51,7 +55,7 @@ class TestExercises(unittest.TestCase):
         self.verifies("squeeze", "exercise 3")
 
     def test_and_then_everything_else_verifies_too(self):
-        for instance in ("pigeonhole", "too-small", "cycle", "tight-sum"):
+        for instance in ("pigeonhole", "agreement", "too-small", "cycle", "tight-sum"):
             with self.subTest(instance=instance):
                 self.verifies(instance, "some exercise")
 

@@ -129,6 +129,20 @@ def squeeze() -> Model:
     return model
 
 
+def two_tables() -> Model:
+    """Two tables over the same pair of variables that cannot both be obeyed.
+
+    Nothing else is involved, so this is the instance for exercise 1: if it
+    still reports something unjustified, it is table_int's doing and nobody
+    else's.
+    """
+    model = Model()
+    a, b = (model.add_variable(1, n) for n in "ab")
+    model.add_constraint(TableInt([a, b], [(0, 0), (1, 1)]))
+    model.add_constraint(TableInt([a, b], [(0, 1), (1, 0)]))
+    return model
+
+
 def puzzle() -> Model:
     """A satisfiable one with exactly one solution, using all three
     constraints, and with that solution sitting right on the edge of each of
@@ -168,6 +182,7 @@ INSTANCES = {
     "over-budget": over_budget,
     "squeeze": squeeze,
     "puzzle": puzzle,
+    "two-tables": two_tables,
     "latin": latin,
 }
 
