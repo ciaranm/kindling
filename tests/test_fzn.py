@@ -174,3 +174,41 @@ class TestTranslation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+REPOSITORY = pathlib.Path(__file__).parent.parent
+HAVE_MINIZINC = __import__("shutil").which("minizinc") is not None
+
+
+@unittest.skipUnless(HAVE_MINIZINC, "minizinc is not installed")
+class TestMiniZincBackend(unittest.TestCase):
+    """kindling is a MiniZinc solver, so the whole path from a model to an
+    answer should work with one command and no intermediate files.  If the
+    solver configuration or the library of native constraints is wrong, this is
+    what notices."""
+
+    def run_minizinc(self, model: str, *extra: str) -> str:
+        import subprocess
+
+        result = subprocess.run(
+            ["minizinc", "--solver", str(REPOSITORY / "minizinc" / "kindling.msc"),
+             *extra, str(INSTANCES / model)],
+            capture_output=True, text=True, cwd=REPOSITORY,
+        )
+        return result.stdout + result.stderr
+
+    def test_an_unsatisfiable_model(self):
+        self.assertIn("=====UNSATISFIABLE=====", self.run_minizinc("pigeonhole.mzn"))
+
+    def test_a_satisfiable_model_comes_back_as_minizinc_wrote_it(self):
+        out = self.run_minizinc("latin.mzn")
+        self.assertIn("----------", out)
+        self.assertNotIn("UNSATISFIABLE", out)
+
+    def test_all_different_survives_flattening(self):
+        """If mznlib stopped declaring it native, MiniZinc would decompose it
+        into disequalities and the reader would refuse the whole model."""
+        self.assertNotIn("does not have", self.run_minizinc("pigeonhole.mzn"))
+
+    def test_table_survives_flattening(self):
+        self.assertNotIn("does not have", self.run_minizinc("agreement.mzn"))

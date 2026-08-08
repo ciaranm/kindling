@@ -17,6 +17,9 @@
    "id": "fzn_all_different_int"
   }
  ],
+ "output": [
+  "pigeon"
+ ],
  "solve": {
   "method": "satisfy"
  },

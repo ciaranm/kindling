@@ -38,15 +38,15 @@ class Unsupported(Exception):
     """Something in the file that kindling cannot honestly represent."""
 
 
-# What we accept, and what the flattener may have called it.  Gecode's library
-# names its table constraint after itself; tools/mzn2fzn.py renames it on the
-# way out, and the alias is here so a hand-made file works either way.
+# What we accept, and what the flattener may have called it.  minizinc/mznlib
+# declares all_different under its usual name but has to rename table, because
+# the tuples arrive two-dimensional and get flattened on the way past.
 ALIASES = {
     "all_different_int": "all_different_int",
     "fzn_all_different_int": "all_different_int",
     "table_int": "table_int",
     "fzn_table_int": "table_int",
-    "gecode_table_int": "table_int",
+    "kindling_table_int": "table_int",
     "int_lin_le": "int_lin_le",
     "int_lin_eq": "int_lin_eq",
 }
@@ -199,3 +199,26 @@ def read(source) -> Model:
     reader.read_variables()
     reader.read_constraints()
     return reader.model
+
+
+def output_text(document: dict, solution) -> str:
+    """A solution written the way MiniZinc expects to read one back.
+
+    Names come from the file's output section, and an array is printed as a
+    whole even though the solver only ever knew about its elements.
+    """
+    by_name = {x.name: value for x, value in solution.items()}
+    arrays = {name: entry["a"] for name, entry in document.get("arrays", {}).items()}
+    lines = []
+    for name in document.get("output", []):
+        if name in by_name:
+            lines.append(f"{name} = {by_name[name]};")
+        elif name in arrays:
+            values = ", ".join(
+                str(by_name[item] if isinstance(item, str) else item)
+                for item in arrays[name]
+            )
+            lines.append(f"{name} = [{values}];")
+        else:
+            raise Unsupported(f"asked to output {name}, which is not in the file")
+    return "\n".join(lines + ["----------", ""])

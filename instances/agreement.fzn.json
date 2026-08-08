@@ -21,7 +21,7 @@
     "x",
     "X_INTRODUCED_19_"
    ],
-   "id": "fzn_table_int"
+   "id": "kindling_table_int"
   },
   {
    "args": [
@@ -29,6 +29,9 @@
    ],
    "id": "fzn_all_different_int"
   }
+ ],
+ "output": [
+  "x"
  ],
  "solve": {
   "method": "satisfy"

@@ -1,0 +1,12 @@
+{
+    "id": "org.kindling.kindling",
+    "name": "kindling",
+    "description": "a tiny constraint solver that shows its working",
+    "version": "0.1.0",
+    "mznlib": "mznlib",
+    "executable": "../bin/fzn-kindling",
+    "tags": ["cp", "int"],
+    "stdFlags": [],
+    "extraFlags": [["--prove", "Write a proof to <basename>.opb and <basename>.pbp", "string", ""]],
+    "inputType": "JSON"
+}

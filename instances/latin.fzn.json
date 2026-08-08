@@ -135,6 +135,9 @@
    "id": "fzn_all_different_int"
   }
  ],
+ "output": [
+  "X_INTRODUCED_16_"
+ ],
  "solve": {
   "method": "satisfy"
  },

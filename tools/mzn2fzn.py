@@ -6,11 +6,12 @@ practical needs MiniZinc installed, or a working network to install it.
 
 Run it as:  python3 tools/mzn2fzn.py instances/*.mzn
 
-Gecode's library is used because it declares all_different and table as native
-rather than decomposing them, which the default library does -- decomposed,
-all_different comes out as a pile of int_lin_ne and kindling cannot do that at
-all.  Gecode names its table constraint after itself, so that gets renamed on
-the way out and the reader never has to know.
+This is only for shipping the .fzn.json files.  If MiniZinc is installed you do
+not need it at all -- kindling is a MiniZinc solver, so
+
+    minizinc --solver minizinc/kindling.msc instances/pigeonhole.mzn
+
+runs the whole thing, and --prove <basename> writes the proof as well.
 """
 
 from __future__ import annotations
@@ -20,16 +21,13 @@ import pathlib
 import subprocess
 import sys
 
-RENAME = {"gecode_table_int": "fzn_table_int"}
-
-
 def flatten(model: pathlib.Path) -> dict:
     result = subprocess.run(
         [
             "minizinc",
             "-c",
             "--solver",
-            "gecode",
+            str(pathlib.Path(__file__).resolve().parent.parent / "minizinc" / "kindling.msc"),
             "--fzn-format",
             "json",
             "--output-fzn-to-stdout",
@@ -41,10 +39,6 @@ def flatten(model: pathlib.Path) -> dict:
     if result.returncode != 0:
         raise SystemExit(f"{model}: minizinc said\n{result.stderr}")
     document = json.loads(result.stdout)
-    for constraint in document.get("constraints", []):
-        constraint["id"] = RENAME.get(constraint["id"], constraint["id"])
-    # The bits we do not read, dropped so that what is committed is what is used.
-    document.pop("output", None)
     document.pop("version", None)
     return document
 
