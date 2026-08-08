@@ -21,6 +21,7 @@ from enum import IntEnum
 from .domain import Domain
 from .justify import Justification
 from .model import Model, Variable
+from .proof.log import NoProof
 from .proof.names import eq, ge, neg
 
 
@@ -34,8 +35,9 @@ class Inference(IntEnum):
 
 
 class State:
-    def __init__(self, model: Model) -> None:
+    def __init__(self, model: Model, log=None) -> None:
         self.model = model
+        self.log = log if log is not None else NoProof()
         self.domains = [Domain(x.ub) for x in model.variables]
         self.decisions: list[str] = []  # the atoms we assumed to get here
         self.changed: set[int] = set()  # variable indices, for the queue
@@ -45,6 +47,7 @@ class State:
         never changes, so a child can never disturb its parent."""
         child = State.__new__(State)
         child.model = self.model
+        child.log = self.log
         child.domains = [d.copy() for d in self.domains]
         child.decisions = list(self.decisions)
         child.changed = set()
@@ -101,7 +104,7 @@ class State:
         """This node cannot lead to a solution."""
         # The line that closes the node is written by the search, not here;
         # what a propagator owes is whatever makes that line checkable.
-        _ = because  # stage 3: hand this to the proof
+        self.log.failed(because)
         return Inference.CONTRADICTION
 
     def _narrowed(
@@ -113,7 +116,7 @@ class State:
             # Saying CHANGED when nothing changed would let propagation loop
             # forever, so this has to be honest.
             return Inference.NO_CHANGE
-        _ = atom, because  # stage 3: write "reason -> atom" to the proof
+        self.log.infer(atom, because)
         self.changed.add(x.index)
         if self.domain(x).is_empty():
             return Inference.CONTRADICTION

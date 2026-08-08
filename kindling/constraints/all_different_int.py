@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 
 from ..justify import Assert
 from ..model import Constraint, Variable
-from ..proof.names import eq
+from ..proof.names import eq, neg
 from ..state import Inference
 
 
@@ -74,10 +74,27 @@ class AllDifferentInt(Constraint):
                 variables = [self.scope[position]] + [
                     self.scope[taken[v]] for v in values
                 ]
-                return variables, values
+                # Index order rather than the order the search happened to
+                # find them in, so that proofs read left to right and two runs
+                # produce the same file.
+                return sorted(variables, key=lambda x: x.index), values
         return None
 
     def propagate(self, state) -> Inference:
-        if self.hall_violator(state) is None:
+        violator = self.hall_violator(state)
+        if violator is None:
             return Inference.NO_CHANGE
-        return state.fail(Assert("all_different_hall"))
+        variables, values = violator
+
+        # What makes this a violation is that these variables have lost
+        # everything outside this set of values.  Say which, and the clause that
+        # comes out -- "one of them takes a value from outside after all" -- is
+        # exactly the row a cutting-planes derivation would produce, which is
+        # why turning this assertion into that derivation changes nothing else.
+        reason = tuple(
+            neg(eq(x.index, v))
+            for x in variables
+            for v in range(0, x.ub + 1)
+            if v not in set(values)
+        )
+        return state.fail(Assert("all_different_hall", reason))

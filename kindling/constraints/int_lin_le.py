@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 
 from ..justify import Assert
 from ..model import Constraint, Variable
-from ..proof.names import bits
+from ..proof.names import bits, ge, neg
 from ..state import Inference
 
 
@@ -57,19 +57,45 @@ class IntLinLe(Constraint):
             return state.lower_bound(x)
         return -state.upper_bound(x)
 
+    def bound_atom(self, state, position: int) -> str | None:
+        """The atom that says this term is as big as smallest() claims.
+
+        None when the bound is the one the variable was declared with, because
+        then there is nothing to cite -- x >= 0 and x <= its upper bound are
+        not facts anyone had to work out, and they have no atoms.
+        """
+        x = self.scope[position]
+        if self.coefficients[position] > 0:
+            lower = state.lower_bound(x)
+            return ge(x.index, lower) if lower > 0 else None
+        upper = state.upper_bound(x)
+        return neg(ge(x.index, upper + 1)) if upper < x.ub else None
+
     def propagate(self, state) -> Inference:
+        # Both of these are read once, before anything is narrowed.  A reason
+        # has to be the bounds the conclusion was actually worked out from: if
+        # an earlier narrowing in this same loop tightened something and we
+        # cited the tighter bound, the justification would be for a conclusion
+        # we are not the one drawing.
         smallest = [self.smallest(state, i) for i in range(len(self.scope))]
+        atoms = [self.bound_atom(state, i) for i in range(len(self.scope))]
         total = sum(smallest)
 
+        def reason(ignoring=None) -> tuple[str, ...]:
+            return tuple(
+                a for i, a in enumerate(atoms) if i != ignoring and a is not None
+            )
+
         if total > self.rhs:
-            return state.fail(Assert("int_lin_le_failure"))
+            # Even at their smallest these terms overshoot.
+            return state.fail(Assert("int_lin_le_failure", reason()))
 
         result = Inference.NO_CHANGE
         for i, x in enumerate(self.scope):
             # Everything else is at least this much, so this term has at most
             # the rest of the budget to play with.
             budget = self.rhs - (total - smallest[i])
-            because = Assert("int_lin_le_bound")
+            because = Assert("int_lin_le_bound", reason(ignoring=i))
             if self.coefficients[i] > 0:
                 result = max(result, state.set_upper_bound(x, budget, because))
             else:
