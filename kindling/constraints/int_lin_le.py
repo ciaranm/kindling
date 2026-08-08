@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..justify import Pol
+from ..justify import Assert, Pol
 from ..model import Constraint, Variable
 from ..proof.names import bits
 from ..state import Inference
@@ -66,8 +66,11 @@ class IntLinLe(Constraint):
         needs the opposite, and that is _dn.  The whole difference between a
         positive and a negative coefficient, in the proof, is these two letters.
         """
+        # EXERCISE 2.  This only knows about terms that count upwards.  A term
+        # with a negative coefficient needs its variable bounded from the other
+        # side, and there is a row in the .opb for that too.
         x = self.scope[position]
-        return f"@x{x.index}ge{value}_{'up' if self.coefficients[position] > 0 else 'dn'}"
+        return f"@x{x.index}ge{value}_up"
 
     def bound_values(self, state) -> list[int | None]:
         """For each term, the order atom whose row will cancel its bits away, or
@@ -100,9 +103,15 @@ class IntLinLe(Constraint):
         bounds = self.bound_values(state)
         total = sum(smallest)
 
+        # Until exercise 2 is done, a constraint with a negative coefficient in
+        # it cannot be justified, so it gets asserted instead.
+        derivable = all(c > 0 for c in self.coefficients)
+
         if total > self.rhs:
             # Even at their smallest these terms overshoot.  Adding every bound
             # to the constraint row leaves something that cannot be satisfied.
+            if not derivable:
+                return state.fail(Assert("int_lin_le_negative_coefficient"))
             return state.fail(Pol(tuple(self.steps(bounds) + ["s"])))
 
         result = Inference.NO_CHANGE
@@ -113,11 +122,15 @@ class IntLinLe(Constraint):
             # The same sum again, but leaving this term's own bound out and
             # putting in the bound we are about to claim instead.
             claimed = budget + 1 if self.coefficients[i] > 0 else -budget
-            because = Pol(
-                tuple(
-                    self.steps(bounds, ignoring=i)
-                    + [self.channelling(i, claimed), "+", "s"]
+            because = (
+                Pol(
+                    tuple(
+                        self.steps(bounds, ignoring=i)
+                        + [self.channelling(i, claimed), "+", "s"]
+                    )
                 )
+                if derivable
+                else Assert("int_lin_le_negative_coefficient")
             )
             if self.coefficients[i] > 0:
                 result = max(result, state.set_upper_bound(x, budget, because))

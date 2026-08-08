@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..justify import Rup
+from ..justify import Assert
 from ..model import Constraint, Variable
 from ..proof.names import eq, neg, selector
 from ..state import Inference
@@ -77,13 +77,17 @@ class TableInt(Constraint):
         supported, possible = self.supports(state)
 
         if possible == 0:
-            return state.fail(Rup())
+            # EXERCISE 1.  Both of the Assert(...) in this method say "trust
+            # me" rather than giving the checker anything to check.  They can
+            # both be Rup(), because this constraint's reasoning really is
+            # reverse unit propagation -- see docs/practical.md.
+            return state.fail(Assert("table_no_tuple"))
 
         result = Inference.NO_CHANGE
         for position, x in enumerate(self.scope):
             for v in list(state.domain(x)):
                 if v not in supported[position]:
-                    result = max(result, state.remove(x, v, Rup()))
+                    result = max(result, state.remove(x, v, Assert("table_support")))
                     if result is Inference.CONTRADICTION:
                         return result
         return result
