@@ -19,13 +19,15 @@ from __future__ import annotations
 
 import argparse
 import pathlib
+import shutil
+import subprocess
 import sys
 
 from .constraints.all_different_int import AllDifferentInt
 from .constraints.int_lin_le import IntLinLe
 from .constraints.table_int import TableInt
 from .model import Model
-from . import fzn
+from . import bugs, fzn
 from .proof.encoding import define_proof_model
 from .proof.log import ProofLog
 from .search import solve
@@ -127,6 +129,22 @@ def squeeze() -> Model:
     return model
 
 
+def puzzle() -> Model:
+    """A satisfiable one with exactly one solution, using all three
+    constraints, and with that solution sitting right on the edge of each of
+    them.  This is the instance to run the --bug options against: a propagator
+    that removes one value too many loses the only solution, so the solver
+    claims there is none, and the proof of that claim is a lie the checker
+    catches.
+    """
+    model = Model()
+    a, b, c = (model.add_variable(3, n) for n in "abc")
+    model.add_constraint(TableInt([a, b], [(0, 0), (1, 1), (2, 3)]))
+    model.add_constraint(AllDifferentInt([a, b, c]))
+    model.add_constraint(IntLinLe([1, 1, 1], [a, b, c], 5))
+    return model
+
+
 def latin(n: int = 4) -> Model:
     """A satisfiable one, to show the solver is not just saying no."""
     model = Model()
@@ -149,6 +167,7 @@ INSTANCES = {
     "tight-sum": tight_sum,
     "over-budget": over_budget,
     "squeeze": squeeze,
+    "puzzle": puzzle,
     "latin": latin,
 }
 
@@ -159,7 +178,20 @@ def main(argv: list[str] | None = None) -> int:
         "instance", help=f"a .fzn.json file, or one of: {', '.join(sorted(INSTANCES))}"
     )
     parser.add_argument("--prove", metavar="NAME", help="write NAME.opb and NAME.pbp")
+    parser.add_argument(
+        "--check", action="store_true", help="run veripb on the proof afterwards"
+    )
+    parser.add_argument(
+        "--bug",
+        choices=sorted(bugs.BUGS),
+        help="break a propagator on purpose, and see whether the checker notices",
+    )
     args = parser.parse_args(argv)
+
+    if args.bug:
+        bugs.apply(args.bug)
+    if args.check and not args.prove:
+        parser.error("--check needs a proof to check, so pass --prove too")
 
     if args.instance in INSTANCES:
         model = INSTANCES[args.instance]()
@@ -200,7 +232,30 @@ def main(argv: list[str] | None = None) -> int:
     else:
         for x, value in solution.items():
             print(f"{x.name} = {value}")
-    return 0
+
+    return check(args.prove) if args.check else 0
+
+
+def check(basename: str) -> int:
+    """Hand the proof to veripb and say what it made of it."""
+    if shutil.which("veripb") is None:
+        print("veripb is not on the path, so nothing checked it", file=sys.stderr)
+        return 3
+    result = subprocess.run(
+        ["veripb", f"{basename}.opb", f"{basename}.pbp"],
+        capture_output=True,
+        text=True,
+    )
+    text = result.stdout + result.stderr
+    if "s VERIFIED" in text:
+        print("veripb: VERIFIED -- every line of that proof was checked")
+        return 0
+    if "s UNDER ASSERTIONS" in text:
+        print("veripb: UNDER ASSERTIONS -- everything checked except what we asserted")
+        return 1
+    print("veripb: REJECTED. It said:", file=sys.stderr)
+    print(text.strip(), file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":

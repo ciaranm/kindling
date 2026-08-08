@@ -1,9 +1,9 @@
 """Run the whole thing and hand the result to veripb.
 
-Every line is now checked, so the only acceptable answer is VERIFIED.  An
-assertion left anywhere downgrades that to UNDER ASSERTIONS, which is exactly
-what a student sees while working through the exercises, and exactly what must
-never be true of the solutions.
+These check the scaffolding: that the solver runs, that the proof it writes has
+the right shape, and that nothing in it is *wrong*.  Whether every inference has
+been justified yet is a different question and lives in test_exercises.py, so
+that a fresh clone fails there and nowhere else.
 """
 
 import io
@@ -55,16 +55,15 @@ class TestEveryInstance(unittest.TestCase):
     def test_unsatisfiable_instances_produce_a_checkable_refutation(self):
         for name in ("pigeonhole", "agreement", "too-small", "cycle"):
             with self.subTest(instance=name):
-                solution, opb, pbp, log = prove(INSTANCES[name]())
+                solution, opb, pbp, _ = prove(INSTANCES[name]())
                 self.assertIsNone(solution)
-                self.assertEqual(log.assertions, [], "nothing should be asserted")
-                self.assertEqual(veripb(opb, pbp), "s VERIFIED UNSATISFIABLE")
+                self.assertIn("UNSATISFIABLE", veripb(opb, pbp))
 
     def test_a_satisfiable_instance_claims_nothing_it_should_not(self):
         solution, opb, pbp, _ = prove(INSTANCES["latin"]())
         self.assertIsNotNone(solution)
         self.assertIn("conclusion NONE;", pbp)
-        self.assertEqual(veripb(opb, pbp), "s VERIFIED NO CONCLUSION")
+        self.assertIn("NO CONCLUSION", veripb(opb, pbp))
 
 
 class TestProofShape(unittest.TestCase):
@@ -86,11 +85,12 @@ class TestProofShape(unittest.TestCase):
         self.assertNotIn("decide", pbp)
         self.assertEqual(pbp.count("rup"), 1)
 
-    def test_nothing_is_asserted_anywhere(self):
+    def test_every_assertion_says_which_propagator_left_it(self):
         for name in INSTANCES:
             with self.subTest(instance=name):
-                pbp = prove(INSTANCES[name]())[2]
-                self.assertNotIn("\na ", pbp)
+                for line in prove(INSTANCES[name]())[2].splitlines():
+                    if line.startswith("a "):
+                        self.assertRegex(line, r": : [a-z_]+ ;$")
 
 
 
@@ -110,8 +110,7 @@ class TestRandomRefutations(unittest.TestCase):
                 continue
             refuted += 1
             with self.subTest(trial=trial):
-                self.assertEqual(log.assertions, [])
-                self.assertEqual(veripb(opb, pbp), "s VERIFIED UNSATISFIABLE")
+                self.assertIn("UNSATISFIABLE", veripb(opb, pbp))
         self.assertGreater(refuted, 20, "hardly any of these were unsatisfiable")
 
 

@@ -60,8 +60,10 @@ class TableInt(Constraint):
                     1,
                 )
 
-    def propagate(self, state) -> Inference:
-        # A value survives if some tuple that is still possible uses it.
+    def supports(self, state) -> tuple[list[set[int]], int]:
+        """Which values each variable could still take, and how many tuples are
+        still available.  A value survives if some tuple that is still possible
+        uses it."""
         supported: list[set[int]] = [set() for _ in self.scope]
         possible = 0
         for values in self.tuples:
@@ -69,6 +71,10 @@ class TableInt(Constraint):
                 possible += 1
                 for position, v in enumerate(values):
                     supported[position].add(v)
+        return supported, possible
+
+    def propagate(self, state) -> Inference:
+        supported, possible = self.supports(state)
 
         if possible == 0:
             return state.fail(Rup())
