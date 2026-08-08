@@ -1,0 +1,33 @@
+pseudo-Boolean proof version 3.0
+% table(x1,x2) in {(0,0),(1,1)} together with all_different(x1,x2) has no
+% solution, but neither propagator sees that at the root.  It takes two nodes,
+% and this is the whole proof, scaffolding included.
+%
+% Preamble: each variable takes at least one value.  Derived, not assumed.
+@atleast1 pol @x1eq0_dn @x1eq1_dn + ;
+@atleast2 pol @x2eq0_dn @x2eq1_dn + ;
+
+% ---- node: decide x1 = 0 ----
+% table: the tuple (1,1) is dead, so x2 = 1 has no support
+rup 1 ~x1eq0 1 ~x2eq1 >= 1 ;
+% all_different: x1 and x2 are now both confined to {0}, a Hall violator.
+% Adding the at-most-one row for value 0 to the two at-least-one rows cancels
+% every atom for a value inside the violated set, and what is left says "one of
+% x1, x2 takes a value outside {0}".  That row is true at the root; it is the
+% node's own inferences that make it false here.
+@hall_a pol @amo2_0 @atleast1 + @atleast2 + ;
+% so the node fails, and the decision that got us here is refuted
+rup 1 ~x1eq0 >= 1 ;
+
+% ---- node: decide x1 != 0, which leaves x1 = 1 ----
+% table: symmetric, the tuple (0,0) is dead so x2 = 0 has no support
+rup 1 ~x1eq1 1 ~x2eq0 >= 1 ;
+% all_different: both confined to {1} this time
+@hall_b pol @amo2_1 @atleast1 + @atleast2 + ;
+rup 1 x1eq0 >= 1 ;
+
+% ---- both branches refuted ----
+rup >= 1 ;
+output NONE;
+conclusion UNSAT;
+end pseudo-Boolean proof;

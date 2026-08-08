@@ -1,0 +1,27 @@
+pseudo-Boolean proof version 3.0
+% The same refutation as search.pbp, but as a student first meets it: every
+% propagator states the constraint it wants and asserts it with the "a" rule
+% instead of justifying it.  The search scaffolding is unchanged and still
+% honest -- only the propagators are unjustified.
+%
+% This is the state the solver ships in.  veripb accepts it, but says
+% UNDER ASSERTIONS rather than VERIFIED, and each exercise turns one "a" into
+% a real derivation without touching anything else.
+@atleast1 pol @x1eq0_dn @x1eq1_dn + ;
+@atleast2 pol @x2eq0_dn @x2eq1_dn + ;
+
+% ---- node: decide x1 = 0 ----
+a 1 ~x1eq0 1 ~x2eq1 >= 1 : : table_support ;
+@hall_a a 1 x1eq1 1 x2eq1 >= 1 : : alldifferent_hall ;
+rup 1 ~x1eq0 >= 1 ;
+
+% ---- node: decide x1 != 0, which leaves x1 = 1 ----
+a 1 ~x1eq1 1 ~x2eq0 >= 1 : : table_support ;
+@hall_b a 1 x1eq0 1 x2eq0 >= 1 : : alldifferent_hall ;
+rup 1 x1eq0 >= 1 ;
+
+% ---- both branches refuted ----
+rup >= 1 ;
+output NONE;
+conclusion UNSAT;
+end pseudo-Boolean proof;

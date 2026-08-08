@@ -1,0 +1,22 @@
+* smoke test: x1, x2 in [0,3]; constraint x1 + x2 <= 3
+*
+* Each variable x{i} is a sum of bits: x{i} = 2*x{i}b1 + 1*x{i}b0.
+* For each value v we name an order atom x{i}ge{v}, meaning "x{i} >= v",
+* and channel it to the bits in both directions:
+*   _up:  x{i}ge{v} -> x{i} >= v        bits + v*~ge >= v
+*   _dn:  x{i} >= v -> x{i}ge{v}        (U-bits) + (U-v+1)*ge >= U-v+1
+* where U = 3 is the largest value the bits can take.
+@x1ge1_up 2 x1b1 1 x1b0 1 ~x1ge1 >= 1 ;
+@x1ge1_dn 2 ~x1b1 1 ~x1b0 3 x1ge1 >= 3 ;
+@x1ge2_up 2 x1b1 1 x1b0 2 ~x1ge2 >= 2 ;
+@x1ge2_dn 2 ~x1b1 1 ~x1b0 2 x1ge2 >= 2 ;
+@x1ge3_up 2 x1b1 1 x1b0 3 ~x1ge3 >= 3 ;
+@x1ge3_dn 2 ~x1b1 1 ~x1b0 1 x1ge3 >= 1 ;
+@x2ge1_up 2 x2b1 1 x2b0 1 ~x2ge1 >= 1 ;
+@x2ge1_dn 2 ~x2b1 1 ~x2b0 3 x2ge1 >= 3 ;
+@x2ge2_up 2 x2b1 1 x2b0 2 ~x2ge2 >= 2 ;
+@x2ge2_dn 2 ~x2b1 1 ~x2b0 2 x2ge2 >= 2 ;
+@x2ge3_up 2 x2b1 1 x2b0 3 ~x2ge3 >= 3 ;
+@x2ge3_dn 2 ~x2b1 1 ~x2b0 1 x2ge3 >= 1 ;
+* x1 + x2 <= 3
+@lin1 2 x1b1 1 x1b0 2 x2b1 1 x2b0 <= 3 ;

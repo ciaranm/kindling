@@ -1,0 +1,38 @@
+* x1, x2 in [0,1]; table(x1,x2) in {(0,0),(1,1)}; all_different(x1,x2)
+* --- x1 in [0, 1] ---
+* x1 = 1*x1b0
+* order atoms: x1ge{v} means x1 >= v, channelled to the bits both ways.
+* veripb accepts arrow syntax in .pbp files but not in .opb files, so these
+* are the big-M forms of what we would rather have written as
+*     x1ge{v} ==> 1 x1b0 >= v      (_up)
+*     x1ge{v} <== 1 x1b0 >= v      (_dn)
+@x1ge1_up 1 x1b0 1 ~x1ge1 >= 1 ;
+@x1ge1_dn 1 ~x1b0 1 x1ge1 >= 1 ;
+* direct atoms: x1eq{v} <-> x1ge{v} and not x1ge{v+1}
+@x1eq0_up0 1 ~x1eq0 1 ~x1ge1 >= 1 ;
+@x1eq0_dn 1 x1eq0 1 x1ge1 >= 1 ;
+@x1eq1_up0 1 ~x1eq1 1 x1ge1 >= 1 ;
+@x1eq1_dn 1 x1eq1 1 ~x1ge1 >= 1 ;
+* --- x2 in [0, 1] ---
+* x2 = 1*x2b0
+* order atoms: x2ge{v} means x2 >= v, channelled to the bits both ways.
+* veripb accepts arrow syntax in .pbp files but not in .opb files, so these
+* are the big-M forms of what we would rather have written as
+*     x2ge{v} ==> 1 x2b0 >= v      (_up)
+*     x2ge{v} <== 1 x2b0 >= v      (_dn)
+@x2ge1_up 1 x2b0 1 ~x2ge1 >= 1 ;
+@x2ge1_dn 1 ~x2b0 1 x2ge1 >= 1 ;
+* direct atoms: x2eq{v} <-> x2ge{v} and not x2ge{v+1}
+@x2eq0_up0 1 ~x2eq0 1 ~x2ge1 >= 1 ;
+@x2eq0_dn 1 x2eq0 1 x2ge1 >= 1 ;
+@x2eq1_up0 1 ~x2eq1 1 x2ge1 >= 1 ;
+@x2eq1_dn 1 x2eq1 1 ~x2ge1 >= 1 ;
+* table(x1, x2) with 2 tuples
+@tbl1_sel 1 c1t0 1 c1t1 >= 1 ;
+@tbl1t0_1 1 ~c1t0 1 x1eq0 >= 1 ;
+@tbl1t0_2 1 ~c1t0 1 x2eq0 >= 1 ;
+@tbl1t1_1 1 ~c1t1 1 x1eq1 >= 1 ;
+@tbl1t1_2 1 ~c1t1 1 x2eq1 >= 1 ;
+* all_different(x1, x2)
+@amo2_0 1 x1eq0 1 x2eq0 <= 1 ;
+@amo2_1 1 x1eq1 1 x2eq1 <= 1 ;

@@ -1,0 +1,16 @@
+pseudo-Boolean proof version 3.0
+% x1 + x2 + x3 <= 9, and we know x2 >= 3 and x3 >= 3, so x1 <= 3.
+% The inference we want to log is the clause
+%     x2ge3 and x3ge3  ->  not x1ge4
+% which is valid at the root, independently of how we came to know the bounds.
+%
+% Sum the constraint row with one channelling row per atom in the clause: one
+% for each reason atom, and one for the atom being inferred.  Every bit cancels
+% against its own negation, leaving only the big-M coefficients, and saturation
+% turns those into the clause.
+pol @lin1 @x2ge3_up + @x3ge3_up + @x1ge4_up + s ;
+% confirm the pol landed on exactly the clause we wanted
+rup 1 ~x2ge3 1 ~x3ge3 1 ~x1ge4 >= 1 ;
+output NONE;
+conclusion NONE;
+end pseudo-Boolean proof;

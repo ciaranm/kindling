@@ -1,0 +1,14 @@
+pseudo-Boolean proof version 3.0
+% x1 + x2 - x3 <= 0, and we know x1 >= 3 and x3 <= 4, so x2 <= 1.
+% The clause to log is
+%     x1ge3 and not x3ge5  ->  not x2ge2
+%
+% Same recipe as example 01, with one difference: x3 has a negative coefficient
+% in the constraint, so the reason for it is an UPPER bound, and the row that
+% cancels its bits is the "_dn" channelling row rather than the "_up" one.
+% That is the entire content of the negative-coefficient case.
+pol @lin1 @x1ge3_up + @x3ge5_dn + @x2ge2_up + s ;
+rup 1 ~x1ge3 1 x3ge5 1 ~x2ge2 >= 1 ;
+output NONE;
+conclusion NONE;
+end pseudo-Boolean proof;
