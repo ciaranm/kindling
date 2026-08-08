@@ -52,4 +52,30 @@ class Assert:
     name: str
 
 
-Justification = Assert  # stage 4 widens this to Assert | Rup | Pol
+
+
+@dataclass(frozen=True)
+class Rup:
+    """Checked, by reverse unit propagation: the checker assumes the clause is
+    false and propagates everything it knows, and the claim stands if that
+    reaches a contradiction.  Costs nothing to write and does a surprising
+    amount, but it cannot combine two constraints -- for that, see Pol."""
+
+
+@dataclass(frozen=True)
+class Pol:
+    """Checked, by cutting planes: a recipe for building a new row out of rows
+    the checker already has, in reverse Polish.  "@a @b + s" means add row b to
+    row a and saturate the result.
+
+    The steps do not have to land exactly on the clause being claimed.  For an
+    inference, kindling writes the steps and then a rup of the clause, so the
+    steps only have to get the checker close enough to finish on its own.  For
+    a failure it writes the steps alone, because the line the search puts at
+    the bottom of a dead node is already the claim, and it is a rup too.
+    """
+
+    steps: tuple[str, ...]
+
+
+Justification = Assert | Rup | Pol

@@ -52,6 +52,72 @@ def too_small(n: int = 5) -> Model:
     return model
 
 
+def cycle(n: int = 3) -> Model:
+    """x1 < x2 < ... < xn < x1.  Every constraint has a negative coefficient in
+    it, which is the case whose justification runs the other way round."""
+    model = Model()
+    scope = [model.add_variable(n - 1, f"x{i}") for i in range(n)]
+    for i in range(n):
+        a, b = scope[i], scope[(i + 1) % n]
+        model.add_constraint(IntLinLe([1, -1], [a, b], -1))
+    return model
+
+
+def tight_sum() -> Model:
+    """Three variables with room to move, a sum that leaves them little of it,
+    and bounds that arrive from elsewhere rather than from a decision.
+
+    This one exists to make int_lin_le's justification earn its keep.  When a
+    bound comes from a decision the variable is pinned to one value, its bits
+    are pinned with it, and the checker can finish the inference by unit
+    propagation without being shown any cutting planes at all.  Here the bounds
+    come from other constraints and the domains are wide, so no individual bit
+    is determined and the derivation is the only way through.
+    """
+    model = Model()
+    a, b, c = (model.add_variable(7, n) for n in "abc")
+    model.add_constraint(IntLinLe([1, 1, 1], [a, b, c], 9))
+    model.add_constraint(IntLinLe([-1], [b], -3))
+    model.add_constraint(IntLinLe([-1], [c], -3))
+    model.add_constraint(IntLinLe([-1], [a], -4))
+    return model
+
+
+def over_budget() -> Model:
+    """Three tasks that each need at least two, sharing a budget of at most
+    five.
+
+    Like tight-sum this exists so that a justification has to be right rather
+    than merely present, but for the other sign.  The budget enters the sum
+    with a negative coefficient, so the row that cancels its bits is the one
+    running the other way, and an int_lin_le that reached for the same
+    direction every time is rejected here and nowhere else in the set.
+    """
+    model = Model()
+    a, b, c = (model.add_variable(7, n) for n in "abc")
+    budget = model.add_variable(7, "budget")
+    model.add_constraint(IntLinLe([1, 1, 1, -1], [a, b, c, budget], 0))
+    model.add_constraint(IntLinLe([1], [budget], 5))
+    for task in (a, b, c):
+        model.add_constraint(IntLinLe([-1], [task], -2))
+    return model
+
+
+def squeeze() -> Model:
+    """Three variables sharing two values, and a fourth that is fine.
+
+    This one exists to make all_different's justification earn its keep.  In
+    pigeonhole every variable is in the violated set, so the derivation has
+    nothing to weaken away and a version that forgot how would still work.
+    Here the fourth variable has to be got rid of before the sum comes out.
+    """
+    model = Model()
+    scope = [model.add_variable(1, f"tight{i}") for i in range(3)]
+    scope.append(model.add_variable(3, "loose"))
+    model.add_constraint(AllDifferentInt(scope))
+    return model
+
+
 def latin(n: int = 4) -> Model:
     """A satisfiable one, to show the solver is not just saying no."""
     model = Model()
@@ -70,6 +136,10 @@ INSTANCES = {
     "pigeonhole": pigeonhole,
     "agreement": agreement,
     "too-small": too_small,
+    "cycle": cycle,
+    "tight-sum": tight_sum,
+    "over-budget": over_budget,
+    "squeeze": squeeze,
     "latin": latin,
 }
 

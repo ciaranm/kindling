@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from typing import TextIO
 
-from ..justify import Assert
+from ..justify import Assert, Pol
 from ..model import Model
 from .names import neg
 
@@ -103,18 +103,33 @@ class ProofLog(NoProof):
 
     def infer(self, atom: str, because, guesses) -> None:
         """One propagation: the guesses hold, so this atom holds too."""
-        self.emit(inference_clause(atom, guesses), because)
+        literals = inference_clause(atom, guesses)
+        if isinstance(because, Pol):
+            self.steps(because)
+        self.claim(literals, because)
 
     def failed(self, because, guesses) -> None:
-        """A propagator says this node is hopeless."""
-        self.emit(failure_clause(guesses), because)
+        """A propagator says this node is hopeless.
 
-    def emit(self, literals, because) -> None:
+        Nothing needs claiming here.  The line the search writes at the bottom
+        of a dead node says exactly this and says it as a rup, so a propagator
+        that could have made the claim by rup need not say anything at all, and
+        one that needs cutting planes only has to leave the right row behind.
+        """
+        if isinstance(because, Pol):
+            self.steps(because)
+        elif isinstance(because, Assert):
+            self.claim(failure_clause(guesses), because)
+
+    def steps(self, because: Pol) -> None:
+        self.write(f"pol {' '.join(because.steps)} ;")
+
+    def claim(self, literals, because) -> None:
         if isinstance(because, Assert):
             self.assertions.append(because.name)
             self.write(f"a {clause(literals)} : : {because.name} ;")
         else:
-            raise AssertionError(f"no way to write {type(because).__name__} yet")
+            self.write(f"rup {clause(literals)} ;")
 
     def node_failed(self, decisions) -> None:
         self.write(f"rup {clause([neg(d) for d in decisions])} ;")

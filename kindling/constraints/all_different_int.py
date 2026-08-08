@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..justify import Assert
+from ..justify import Pol, Rup
 from ..model import Constraint, Variable
 from ..proof.names import eq
 from ..state import Inference
@@ -80,8 +80,51 @@ class AllDifferentInt(Constraint):
                 return sorted(variables, key=lambda x: x.index), values
         return None
 
+    def hall_steps(self, variables, values) -> tuple[str, ...]:
+        """Cutting planes for "these variables will not fit in these values".
+
+        Add up the at-most-one rows for the values, which says the variables
+        between them take at most len(values) of those values.  Weaken away the
+        variables that are not in the violated set, since they are entitled to
+        those values and this argument is not about them.  Then add each
+        remaining variable's at-least-one row, which says it takes some value
+        somewhere.  Every atom for a variable inside the set and a value inside
+        it cancels, and what survives is
+
+            one of these variables takes a value from outside the set
+
+        which is true at the root and false here, because the reason these
+        variables are in trouble is that they have lost everything outside.
+        Nothing needs saturating: every coefficient is already one.
+
+        The weakening is not strictly load bearing.  Leave it out and the row
+        keeps some atoms belonging to variables the argument is not about, and
+        every instance here still checks, because the line at the bottom of the
+        node finishes the job either way.  It is here so that the row derived is
+        the row the argument is about, which matters more for reading the proof
+        than for passing the checker.
+        """
+        inside = {x.index for x in variables}
+        steps = [f"@amo{self.index}_{values[0]}"]
+        for v in values[1:]:
+            steps += [f"@amo{self.index}_{v}", "+"]
+        for x in self.scope:
+            if x.index in inside:
+                continue
+            for v in values:
+                if v <= x.ub:
+                    steps += [eq(x.index, v), "w"]
+        for x in variables:
+            steps += [f"@atleast{x.index}", "+"]
+        return tuple(steps)
+
     def propagate(self, state) -> Inference:
         violator = self.hall_violator(state)
         if violator is None:
             return Inference.NO_CHANGE
-        return state.fail(Assert("all_different_hall"))
+        variables, values = violator
+        if not values:
+            # A variable with nothing left at all.  There is no set of values to
+            # argue about, and the node's own line already sees the problem.
+            return state.fail(Rup())
+        return state.fail(Pol(self.hall_steps(variables, values)))

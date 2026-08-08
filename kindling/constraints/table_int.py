@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..justify import Assert
+from ..justify import Rup
 from ..model import Constraint, Variable
 from ..proof.names import eq, neg, selector
 from ..state import Inference
@@ -71,14 +71,13 @@ class TableInt(Constraint):
                     supported[position].add(v)
 
         if possible == 0:
-            return state.fail(Assert("table_no_tuple"))
+            return state.fail(Rup())
 
         result = Inference.NO_CHANGE
         for position, x in enumerate(self.scope):
             for v in list(state.domain(x)):
                 if v not in supported[position]:
-                    because = Assert("table_support")
-                    result = max(result, state.remove(x, v, because))
+                    result = max(result, state.remove(x, v, Rup()))
                     if result is Inference.CONTRADICTION:
                         return result
         return result
