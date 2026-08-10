@@ -9,6 +9,8 @@ would do almost all of this differently, and where that matters the code says
 so.
 
 ```
+git clone https://github.com/ciaranm/kindling.git
+cd kindling
 python3 -m kindling pigeonhole
 python3 -m kindling pigeonhole --prove /tmp/ph --check
 veripb /tmp/ph.opb /tmp/ph.pbp
@@ -68,3 +70,13 @@ The two things most worth understanding are in `justify.py` (what a solver owes
 a checker, and the difference between the answer being right and the reasoning
 being sound) and `proof/log.py` (why the entire proof of the search is one line
 per dead end).
+
+## Licence
+
+Licensed under either the Apache License, Version 2.0
+([LICENCE-APACHE](LICENCE-APACHE)) or the MIT License
+([LICENCE-MIT](LICENCE-MIT)), at your option — whichever your employer is
+happier with. Take it home and take it apart.
+
+Anything you contribute back is dual licensed the same way unless you say
+otherwise.
