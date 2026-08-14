@@ -72,8 +72,18 @@ class NoProof:
 
 
 class ProofLog(NoProof):
-    def __init__(self, out: TextIO) -> None:
+    """With justifications turned off, this writes the search and nothing else.
+
+    Every propagation still happens; not a word of it reaches the file.  That
+    is not a way to ship a solver, and it is not an exercise either.  It is
+    here so you can watch what a proof looks like with the propagators left out
+    of it, and find out that the answer is sometimes "still fine" and sometimes
+    "rejected".  Which of those you get is the whole subject.
+    """
+
+    def __init__(self, out: TextIO, justifications: bool = True) -> None:
         self.out = out
+        self.justifications = justifications
         self.assertions: list[str] = []
         self.out.write("pseudo-Boolean proof version 3.0\n")
 
@@ -103,6 +113,8 @@ class ProofLog(NoProof):
 
     def infer(self, atom: str, because, guesses) -> None:
         """One propagation: the guesses hold, so this atom holds too."""
+        if not self.justifications:
+            return
         literals = inference_clause(atom, guesses)
         if isinstance(because, Pol):
             self.steps(because)
@@ -116,6 +128,8 @@ class ProofLog(NoProof):
         that could have made the claim by rup need not say anything at all, and
         one that needs cutting planes only has to leave the right row behind.
         """
+        if not self.justifications:
+            return
         if isinstance(because, Pol):
             self.steps(because)
         elif isinstance(because, Assert):

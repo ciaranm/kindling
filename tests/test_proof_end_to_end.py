@@ -26,10 +26,10 @@ from tests.test_solver import random_model
 HAVE_VERIPB = shutil.which("veripb") is not None
 
 
-def prove(model):
+def prove(model, justifications: bool = True):
     """Solve with proof logging on.  Returns (solution, opb text, pbp text)."""
     out = io.StringIO()
-    log = ProofLog(out)
+    log = ProofLog(out, justifications=justifications)
     solution = solve(model, log)
     return solution, define_proof_model(model).render(), out.getvalue(), log
 
@@ -92,6 +92,34 @@ class TestProofShape(unittest.TestCase):
                     if line.startswith("a "):
                         self.assertRegex(line, r": : [a-z_]+ ;$")
 
+
+
+@unittest.skipUnless(HAVE_VERIPB, "veripb is not on the path")
+class TestTheSearchOnScheduleOfItsOwn(unittest.TestCase):
+    """--no-justifications keeps the search and drops everything else.
+
+    Which is a complete proof more often than anybody expects.  Where the
+    checker can redo by unit propagation what the solver did, it will, and it
+    accepts a proof that never mentions any of it.  Where a linear constraint
+    or a Hall violator did the work, it cannot, and the same proof is rejected.
+
+    Both halves are worth a test.  The second is the motivation for every
+    derivation in this solver, and the first is the reason you cannot
+    demonstrate that motivation on an instance picked at random -- pick the
+    wrong one and the propagators turn out to have been unnecessary all along.
+    """
+
+    def test_a_refutation_the_checker_can_redo_needs_no_help(self):
+        agreement = INSTANCES["agreement"]
+        solution, opb, pbp, _ = prove(agreement(), justifications=False)
+        self.assertIsNone(solution)
+        self.assertLess(len(pbp.splitlines()), len(prove(agreement())[2].splitlines()))
+        self.assertIn("VERIFIED", veripb(opb, pbp))
+
+    def test_a_refutation_that_needed_arithmetic_is_rejected_without_it(self):
+        solution, opb, pbp, _ = prove(INSTANCES["tight-sum"](), justifications=False)
+        self.assertIsNone(solution)
+        self.assertIn("REJECTED", veripb(opb, pbp))
 
 
 @unittest.skipUnless(HAVE_VERIPB, "veripb is not on the path")
