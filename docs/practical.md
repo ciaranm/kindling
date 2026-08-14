@@ -46,6 +46,19 @@ Then look at `/tmp/ag.opb`, which says what the problem means. Most of it is
 the encoding of the variables — every integer gets bits, an atom for each
 `>= v`, and an atom for each `= v`, all written out in full.
 
+There is a switch for leaving the propagators out of the proof altogether:
+
+```
+python3 -m kindling agreement --no-justifications --prove /tmp/ag --check
+python3 -m kindling tight-sum --no-justifications --prove /tmp/t --check
+```
+
+The first still verifies. Everything the solver worked out, the checker worked
+out again by itself, so a proof that never mentions any of it is still a proof.
+The second does not verify, and `veripb --trace-failed /tmp/t.opb /tmp/t.pbp`
+will show you how far the checker got before it ran out of things to propagate.
+The gap between those two runs is what the rest of this is about.
+
 ## Exercise 1: table
 
 `kindling/constraints/table_int.py` removes a value when no tuple can support
