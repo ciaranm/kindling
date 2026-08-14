@@ -8,6 +8,9 @@ With --prove, writes <name>.opb and <name>.pbp, which veripb will check:
     python3 -m kindling instances/agreement.fzn.json --prove /tmp/ag
     veripb /tmp/ph.opb /tmp/ph.pbp
 
+With --no-justifications as well, the proof contains the search and nothing
+else, which is a quick way to see what the propagators were contributing.
+
 The built-in ones are here rather than in instances/ on purpose.  Several of
 them are shaped to make a particular justification earn its keep, and MiniZinc
 would flatten that shape away -- it folds a bound into a variable's domain, and
@@ -201,6 +204,11 @@ def main(argv: list[str] | None = None) -> int:
         choices=sorted(bugs.BUGS),
         help="break a propagator on purpose, and see whether the checker notices",
     )
+    parser.add_argument(
+        "--no-justifications",
+        action="store_true",
+        help="log the search only, leaving out everything the propagators worked out",
+    )
     args = parser.parse_args(argv)
 
     if args.bug:
@@ -229,9 +237,14 @@ def main(argv: list[str] | None = None) -> int:
         stem = pathlib.Path(args.prove)
         stem.with_suffix(".opb").write_text(define_proof_model(model).render())
         with stem.with_suffix(".pbp").open("w") as out:
-            log = ProofLog(out)
+            log = ProofLog(out, justifications=not args.no_justifications)
             solution = solve(model, log)
         print(f"wrote {stem}.opb and {stem}.pbp", file=sys.stderr)
+        if args.no_justifications:
+            print(
+                "the search only: nothing any propagator worked out is in there",
+                file=sys.stderr,
+            )
         if log.assertions:
             counts: dict[str, int] = {}
             for name in log.assertions:
