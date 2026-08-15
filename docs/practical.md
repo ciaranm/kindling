@@ -42,6 +42,15 @@ entire proof of the search: **one line per dead end**, and the root is a dead
 end with nothing in it, so the line that finishes the proof is the same line as
 all the others with nothing left in it.
 
+Everything the solver claims conditionally is written with an arrow.
+`x1eq0 ==> 1 ~x2eq1 >= 1` is "if x1 = 0 then x2 is not 1", and it is one
+pseudo-Boolean constraint and not two: VeriPB carries each atom on the left of
+the arrow into the row negated, so what gets stored is the constraint
+`1 ~x1eq0 1 ~x2eq1 >= 1` you would otherwise have written out yourself. With
+nothing on the right of it, `x1eq0 ==> >= 1` says that guess leads to a
+contradiction — which is exactly what the line at the bottom of a dead node
+needs to say, and `rup >= 1 ;` is that line with the last guess gone too.
+
 Then look at `/tmp/ag.opb`, which says what the problem means. Most of it is
 the encoding of the variables — every integer gets bits, an atom for each
 `>= v`, and an atom for each `= v`, all written out in full.
@@ -99,6 +108,18 @@ variable has in the `.opb`:
 @x1ge3_up 4 x1b2 2 x1b1 1 x1b0 3 ~x1ge3 >= 3 ;
 @x1ge3_dn 4 ~x1b2 2 ~x1b1 1 ~x1b0 5 x1ge3 >= 5 ;
 ```
+
+Those two rows are the arrow constraints
+
+```
+x1ge3 ==> 4 x1b2 2 x1b1 1 x1b0 >= 3
+x1ge3 <== 4 x1b2 2 x1b1 1 x1b0 >= 3
+```
+
+spelled out the long way round, because VeriPB implements the arrow in proof
+files but not in `.opb` files yet. Read them as the definitions they are: the
+atom being true forces the bits up, and the bits being big enough forces the
+atom. The `.opb` says so in a comment above every variable's block.
 
 Make `over-budget` verify. Getting it wrong gives `REJECTED` rather than
 `UNDER ASSERTIONS`, so you will know.

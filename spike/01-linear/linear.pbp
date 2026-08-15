@@ -9,8 +9,10 @@ pseudo-Boolean proof version 3.0
 % against its own negation, leaving only the big-M coefficients, and saturation
 % turns those into the clause.
 pol @lin1 @x2ge3_up + @x3ge3_up + @x1ge4_up + s ;
-% confirm the pol landed on exactly the clause we wanted
-rup 1 ~x2ge3 1 ~x3ge3 1 ~x1ge4 >= 1 ;
+% confirm the pol landed on exactly the clause we wanted, written as the
+% implication it is: veripb's "==>" carries each atom on the left into the row
+% negated, so this is the same constraint the pol just produced.
+rup x2ge3 x3ge3 ==> 1 ~x1ge4 >= 1 ;
 output NONE;
 conclusion NONE;
 end pseudo-Boolean proof;

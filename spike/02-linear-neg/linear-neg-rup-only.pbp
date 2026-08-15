@@ -2,7 +2,7 @@ pseudo-Boolean proof version 3.0
 % The same inference as a bare rup, with no cutting-planes step.  Expected to
 % fail: none of the three bounds pins an individual bit, so unit propagation
 % never reaches the constraint row.
-rup 1 ~x1ge3 1 x3ge5 1 ~x2ge2 >= 1 ;
+rup x1ge3 ~x3ge5 ==> 1 ~x2ge2 >= 1 ;
 output NONE;
 conclusion NONE;
 end pseudo-Boolean proof;

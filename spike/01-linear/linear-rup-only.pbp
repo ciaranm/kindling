@@ -3,7 +3,7 @@ pseudo-Boolean proof version 3.0
 % This is what a student will try first, and it is expected to FAIL: asserting
 % x2ge3 gives the checker a row with slack rather than an assignment to any
 % individual bit, so unit propagation never reaches the constraint row.
-rup 1 ~x2ge3 1 ~x3ge3 1 ~x1ge4 >= 1 ;
+rup x2ge3 x3ge3 ==> 1 ~x1ge4 >= 1 ;
 output NONE;
 conclusion NONE;
 end pseudo-Boolean proof;
