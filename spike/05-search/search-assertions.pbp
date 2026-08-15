@@ -11,14 +11,14 @@ pseudo-Boolean proof version 3.0
 @atleast2 pol @x2eq0_dn @x2eq1_dn + ;
 
 % ---- node: decide x1 = 0 ----
-a 1 ~x1eq0 1 ~x2eq1 >= 1 : : table_support ;
+a x1eq0 ==> 1 ~x2eq1 >= 1 : : table_support ;
 @hall_a a 1 x1eq1 1 x2eq1 >= 1 : : alldifferent_hall ;
-rup 1 ~x1eq0 >= 1 ;
+rup x1eq0 ==> >= 1 ;
 
 % ---- node: decide x1 != 0, which leaves x1 = 1 ----
-a 1 ~x1eq1 1 ~x2eq0 >= 1 : : table_support ;
+a x1eq1 ==> 1 ~x2eq0 >= 1 : : table_support ;
 @hall_b a 1 x1eq0 1 x2eq0 >= 1 : : alldifferent_hall ;
-rup 1 x1eq0 >= 1 ;
+rup ~x1eq0 ==> >= 1 ;
 
 % ---- both branches refuted ----
 rup >= 1 ;
