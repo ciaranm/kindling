@@ -100,8 +100,9 @@ class TestUnitPropagationReach(unittest.TestCase):
     """Propagators reason about one variable's atoms all the time -- this value
     is gone because the lower bound moved past it, this bound follows from that
     one -- and every such step has to be something the checker can do by unit
-    propagation, or the node it happens at will not check.  The encoding has no
-    order chain rows and does not need any; this is the test that says so.
+    propagation, or the node it happens at will not check.  The encoding has
+    no order chain constraints and does not need any; this is the test that
+    says so.
 
     Do not cherry-pick the bounds.  Whether unit propagation gets from one atom
     to another depends on whether the bound in question pins an individual bit,
@@ -171,7 +172,7 @@ class TestModel(unittest.TestCase):
         model = Model()
         a, b = model.add_variable(1), model.add_variable(1)
         model.add_constraint(TableInt([a, b], [(0, 0), (1, 9)]))
-        labels = [row.label for row in define_proof_model(model).rows()]
+        labels = [c.label for c in define_proof_model(model).constraints()]
         self.assertIn("tbl1t1_dead", labels)
 
 

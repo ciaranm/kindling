@@ -1,9 +1,9 @@
 """How an integer variable becomes pseudo-Boolean.
 
 Every variable gets all three layers, written out in full the moment it is
-defined.  Nothing is created lazily, which costs a lot of rows and buys the
-thing that matters here: at no point does anyone have to think about whether
-an atom exists yet.
+defined.  Nothing is created lazily, which costs a lot of constraints and buys
+the thing that matters here: at no point does anyone have to think about
+whether an atom exists yet.
 
     bits    x{i}b{k}     x{i} = sum of 2^k * x{i}b{k}
     order   x{i}ge{v}    x{i} >= v
@@ -13,9 +13,9 @@ The layers are not interchangeable.  Linear constraints are written over the
 bits, because that is the only layer where arithmetic is cheap.  Propagators
 reason in order and direct atoms, because that is what a domain is made of.
 Moving between the two is what most of a kindling proof is doing, and the
-channelling rows below are what makes it possible.
+channelling constraints below are what makes it possible.
 
-An order encoding usually also carries chain rows saying x >= v implies
+An order encoding usually also carries chain constraints saying x >= v implies
 x >= v-1.  There are none here, and they are not an oversight: with the bits
 underneath, every order and direct atom of a variable is already connected to
 every other one through them, so the chain is not merely implied but implied
@@ -35,7 +35,7 @@ from .opb import OpbFile
 
 
 def define_variable(opb: OpbFile, index: int, ub: int, name: str = "") -> None:
-    """Write every row that says what the atoms of one variable mean."""
+    """Write every constraint that says what the atoms of one variable mean."""
     n, ceiling = nbits(ub), top(ub)
     value = " + ".join(f"{2**k}*x{index}b{k}" for k in reversed(range(n)))
 
@@ -50,8 +50,8 @@ def define_variable(opb: OpbFile, index: int, ub: int, name: str = "") -> None:
 
     opb.comment()
     opb.comment(f"x{index}ge{{v}} means x{index} >= v.  veripb accepts reification")
-    opb.comment("arrows in proof files but not in .opb files, so the two rows per")
-    opb.comment("value below are the big-M spelling of what we would rather write:")
+    opb.comment("arrows in proof files but not in .opb files, so the two constraints")
+    opb.comment("per value below are the big-M spelling of what we would rather write:")
     opb.comment(f"    x{index}ge{{v}} ==> {value} >= v      (_up)")
     opb.comment(f"    x{index}ge{{v}} <== {value} >= v      (_dn)")
     for v in range(1, ub + 1):

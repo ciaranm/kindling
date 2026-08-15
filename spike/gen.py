@@ -30,7 +30,7 @@ def bit_sum(i, ub, negated=False):
     )
 
 
-def variable_rows(i, ub):
+def variable_constraints(i, ub):
     """The whole encoding of one variable."""
     top = 2 ** nbits(ub) - 1  # largest value the bits can represent
     out = [
@@ -108,12 +108,13 @@ def table(c, ids, tuples):
 
 
 def render(title, ubs, constraints):
-    """ubs is a dict {var index: upper bound}; constraints a list of row lists."""
+    """ubs is a dict {var index: upper bound}; constraints a list of lists of
+    rendered PB constraints."""
     out = [f"* {title}"]
     for i in sorted(ubs):
-        out += variable_rows(i, ubs[i])
-    for rows in constraints:
-        out += rows
+        out += variable_constraints(i, ubs[i])
+    for constraint in constraints:
+        out += constraint
     return "\n".join(out) + "\n"
 
 
