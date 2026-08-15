@@ -6,14 +6,14 @@ search correct, because a complete assignment with a repeat is always a Hall
 violation, and it keeps the interesting part of the constraint down to one
 argument that a proof can be written about.
 
-Written in the variable-value form -- one at-most-one row per value -- rather
-than the more compact form a serious solver would use.  This encoding is what
-makes the Hall violator argument come out as a plain sum of rows, and being
-able to read that argument off the .opb is worth more here than being small.
+Written in the variable-value form -- one at-most-one constraint per value --
+rather than the more compact form a serious solver would use.  This encoding is
+what makes the Hall violator argument come out as a plain sum, and being able
+to read that argument off the .opb is worth more here than being small.
 
-A value only one variable can take still gets its row.  It says nothing on its
-own, but the Hall violator derivation adds up the rows for every value in the
-violated set, and a missing row would leave the sum short.
+A value only one variable can take still gets its constraint.  It says nothing
+on its own, but the Hall violator derivation adds up the constraints for every
+value in the violated set, and a missing one would leave the sum short.
 """
 
 from __future__ import annotations
@@ -83,13 +83,13 @@ class AllDifferentInt(Constraint):
     def hall_steps(self, variables, values) -> tuple[str, ...]:
         """Cutting planes for "these variables will not fit in these values".
 
-        Add up the at-most-one rows for the values, which says the variables
-        between them take at most len(values) of those values.  Weaken away the
-        variables that are not in the violated set, since they are entitled to
-        those values and this argument is not about them.  Then add each
-        remaining variable's at-least-one row, which says it takes some value
-        somewhere.  Every atom for a variable inside the set and a value inside
-        it cancels, and what survives is
+        Add up the at-most-one constraints for the values, which says the
+        variables between them take at most len(values) of those values.
+        Weaken away the variables that are not in the violated set, since they
+        are entitled to those values and this argument is not about them.  Then
+        add each remaining variable's at-least-one constraint, which says it
+        takes some value somewhere.  Every atom for a variable inside the set
+        and a value inside it cancels, and what survives is
 
             one of these variables takes a value from outside the set
 
@@ -97,12 +97,12 @@ class AllDifferentInt(Constraint):
         variables are in trouble is that they have lost everything outside.
         Nothing needs saturating: every coefficient is already one.
 
-        The weakening is not strictly load bearing.  Leave it out and the row
-        keeps some atoms belonging to variables the argument is not about, and
-        every instance here still checks, because the line at the bottom of the
-        node finishes the job either way.  It is here so that the row derived is
-        the row the argument is about, which matters more for reading the proof
-        than for passing the checker.
+        The weakening is not strictly load bearing.  Leave it out and what comes
+        out keeps some atoms belonging to variables the argument is not about,
+        and every instance here still checks, because the line at the bottom of
+        the node finishes the job either way.  It is here so that what comes out
+        is the constraint the argument is about, which matters more for reading
+        the proof than for passing the checker.
         """
         inside = {x.index for x in variables}
         steps = [f"@amo{self.index}_{values[0]}"]

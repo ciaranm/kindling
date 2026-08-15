@@ -4,15 +4,15 @@ pseudo-Boolean proof version 3.0
 %
 % Step 1: each variable takes at least one value.  That is a consequence of the
 % direct-atom definitions rather than an axiom of the model, so we derive it.
-% Summing the "_dn" rows makes every order atom cancel against its own
-% negation, and what survives is exactly the at-least-one row.
+% Summing the "_dn" constraints makes every order atom cancel against its own
+% negation, and what survives is exactly the at-least-one constraint.
 @atleast1 pol @x1eq0_dn @x1eq1_dn + @x1eq2_dn + ;
 @atleast2 pol @x2eq0_dn @x2eq1_dn + @x2eq2_dn + ;
 @atleast3 pol @x3eq0_dn @x3eq1_dn + @x3eq2_dn + ;
 @atleast4 pol @x4eq0_dn @x4eq1_dn + @x4eq2_dn + ;
 % Step 2: four variables need four values, and only three exist.  Adding the
-% three at-most-one rows to the four at-least-one rows cancels every atom and
-% leaves 0 >= 1.
+% three at-most-one constraints to the four at-least-one constraints cancels
+% every atom and leaves 0 >= 1.
 pol @amo1_0 @amo1_1 + @amo1_2 + @atleast1 + @atleast2 + @atleast3 + @atleast4 + ;
 output NONE;
 conclusion UNSAT;

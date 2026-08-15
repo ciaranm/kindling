@@ -1,10 +1,10 @@
 pseudo-Boolean proof version 3.0
 % from x1 + x2 <= 3 and x2 >= 2, infer x1 <= 1, ie ~x1ge2
-% sum the constraint row with one channelling row per literal involved,
-% the bits cancel, then saturate to turn the big-M row into a clause
+% add @lin1 to one channelling constraint per literal involved, the bits
+% cancel, then saturate to turn the big-M coefficients into a clause
 pol @lin1 @x2ge2_up + @x1ge2_up + s ;
 % check we got exactly the clause we wanted
-rup 1 ~x2ge2 1 ~x1ge2 >= 1 ;
+rup x2ge2 ==> 1 ~x1ge2 >= 1 ;
 output NONE;
 conclusion NONE;
 end pseudo-Boolean proof;

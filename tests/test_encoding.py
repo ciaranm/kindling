@@ -1,9 +1,9 @@
 """The variable encoding is either exactly right or it is worthless, so check
-it exhaustively rather than by eyeballing a few rows.
+it exhaustively rather than by eyeballing a few constraints.
 
 For a small variable there are few enough assignments to its atoms that we can
-try all of them, and demand that the rows are satisfied by exactly the
-assignments where every atom means what its name says.
+try all of them, and demand that the PB constraints are satisfied by exactly
+the assignments where every atom means what its name says.
 """
 
 import itertools
@@ -15,12 +15,12 @@ from kindling.proof.opb import OpbFile
 
 
 class TestVariableEncoding(unittest.TestCase):
-    def test_rows_hold_exactly_when_the_atoms_mean_what_they_say(self):
+    def test_constraints_hold_exactly_when_the_atoms_mean_what_they_say(self):
         for ub in range(0, 6):
             with self.subTest(ub=ub):
                 opb = OpbFile()
                 define_variable(opb, 1, ub)
-                rows = opb.rows()
+                constraints = opb.constraints()
                 atoms = sorted(opb.atoms())
 
                 for values in itertools.product([False, True], repeat=len(atoms)):
@@ -37,7 +37,7 @@ class TestVariableEncoding(unittest.TestCase):
                             assignment[eq(1, v)] == (x == v) for v in range(0, ub + 1)
                         )
                     )
-                    actual = all(row.holds_under(assignment) for row in rows)
+                    actual = all(c.holds_under(assignment) for c in constraints)
                     self.assertEqual(
                         intended,
                         actual,
@@ -53,11 +53,11 @@ class TestVariableEncoding(unittest.TestCase):
         for v in range(1, 4):
             self.assertIn(ge(1, v), atoms)
 
-    def test_every_row_is_labelled(self):
+    def test_every_constraint_is_labelled(self):
         opb = OpbFile()
         define_variable(opb, 1, 4)
-        self.assertTrue(all(row.label for row in opb.rows()))
-        labels = [row.label for row in opb.rows()]
+        self.assertTrue(all(c.label for c in opb.constraints()))
+        labels = [c.label for c in opb.constraints()]
         self.assertEqual(len(labels), len(set(labels)), "labels must be unique")
 
 

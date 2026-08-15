@@ -5,7 +5,10 @@ what each constraint requires; it never states a consequence of those things,
 even a convenient one.  Consequences get derived in the proof, where they can
 be checked.
 
-Every row is labelled, so nothing anywhere needs to track constraint numbers.
+Every constraint is labelled, so nothing anywhere needs to track constraint
+numbers.  "Constraint" is doing two jobs in this solver -- the model has them
+and so does the .opb -- so where both are in the room at once, the ones in here
+are the PB constraints.
 """
 
 from __future__ import annotations
@@ -16,7 +19,7 @@ Term = tuple[int, str]  # (coefficient, literal), where a literal may start "~"
 
 
 @dataclass(frozen=True)
-class Row:
+class PbConstraint:
     label: str
     terms: tuple[Term, ...]
     op: str  # ">=" or "<="
@@ -28,8 +31,8 @@ class Row:
         return f"{prefix}{terms} {self.op} {self.rhs} ;".replace("  ", " ")
 
     def holds_under(self, assignment: dict[str, bool]) -> bool:
-        """Whether this row is satisfied.  Only used by the tests, but it is
-        also the quickest way to see why a row you just wrote is wrong."""
+        """Whether this constraint is satisfied.  Only used by the tests, but it
+        is also the quickest way to see why one you just wrote is wrong."""
         total = 0
         for coefficient, literal in self.terms:
             negated = literal.startswith("~")
@@ -40,30 +43,32 @@ class Row:
 
 class OpbFile:
     def __init__(self) -> None:
-        self.lines: list[str | Row] = []
+        self.lines: list[str | PbConstraint] = []
 
     def comment(self, text: str = "") -> None:
         self.lines.append(f"* {text}".rstrip())
 
-    def constraint(self, label: str, terms: list[Term], op: str, rhs: int) -> Row:
+    def constraint(
+        self, label: str, terms: list[Term], op: str, rhs: int
+    ) -> PbConstraint:
         if op not in (">=", "<="):
-            raise ValueError(f"{op}: write two rows rather than an equality")
-        row = Row(label, tuple(terms), op, rhs)
-        self.lines.append(row)
-        return row
+            raise ValueError(f"{op}: write two inequalities rather than an equality")
+        constraint = PbConstraint(label, tuple(terms), op, rhs)
+        self.lines.append(constraint)
+        return constraint
 
-    def rows(self) -> list[Row]:
-        return [line for line in self.lines if isinstance(line, Row)]
+    def constraints(self) -> list[PbConstraint]:
+        return [line for line in self.lines if isinstance(line, PbConstraint)]
 
     def atoms(self) -> set[str]:
         return {
             literal.lstrip("~")
-            for row in self.rows()
-            for _, literal in row.terms
+            for constraint in self.constraints()
+            for _, literal in constraint.terms
         }
 
     def render(self) -> str:
-        rows = self.rows()
-        header = f"* #variable= {len(self.atoms())} #constraint= {len(rows)}"
+        constraints = self.constraints()
+        header = f"* #variable= {len(self.atoms())} #constraint= {len(constraints)}"
         body = [line if isinstance(line, str) else line.render() for line in self.lines]
         return "\n".join([header] + body) + "\n"
