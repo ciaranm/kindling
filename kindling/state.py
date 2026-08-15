@@ -39,7 +39,7 @@ class State:
         self.model = model
         self.log = log if log is not None else NoProof()
         self.domains = [Domain(x.ub) for x in model.variables]
-        self.decisions: list[str] = []  # the atoms we assumed to get here
+        self.decisions: list[str] = []  # the literals we assumed to get here
         self.changed: set[int] = set()  # variable indices, for the queue
 
     def clone(self) -> State:
@@ -83,8 +83,8 @@ class State:
     ) -> Inference:
         """x is at least bound."""
         if bound > x.ub:
-            # There is no atom for "x >= something above its declared range",
-            # so this is not a narrowing at all -- it is a failure.
+            # There is no literal for "x >= something above its declared
+            # range", so this is not a narrowing at all -- it is a failure.
             return self.fail(because)
         return self._narrowed(
             x, self.domain(x).remove_below(bound), ge(x.index, bound), because
@@ -108,7 +108,7 @@ class State:
         return Inference.CONTRADICTION
 
     def _narrowed(
-        self, x: Variable, changed: bool, atom: str, because: Justification
+        self, x: Variable, changed: bool, literal: str, because: Justification
     ) -> Inference:
         """The chokepoint.  Every domain change in the solver arrives here,
         which is why the proof only has to be written in one place."""
@@ -116,7 +116,7 @@ class State:
             # Saying CHANGED when nothing changed would let propagation loop
             # forever, so this has to be honest.
             return Inference.NO_CHANGE
-        self.log.infer(atom, because, self.decisions)
+        self.log.infer(literal, because, self.decisions)
         self.changed.add(x.index)
         if self.domain(x).is_empty():
             return Inference.CONTRADICTION

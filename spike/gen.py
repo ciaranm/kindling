@@ -10,10 +10,10 @@ layers of the encoding, eagerly:
 
   bits   x{i}b{k}     x{i} = sum of 2^k * x{i}b{k}
   order  x{i}ge{v}    "x{i} >= v", channelled to the bits both ways
-  direct x{i}eq{v}    "x{i} = v", defined from the order atoms
+  direct x{i}eq{v}    "x{i} = v", defined from the order literals
 
 Linear constraints are written over the bits; all_different and table are
-written over the direct atoms.
+written over the direct literals.
 """
 
 import sys
@@ -41,7 +41,8 @@ def variable_constraints(i, ub):
         out.append(f"@x{i}_ub {bit_sum(i, ub)} <= {ub} ;")
 
     out += [
-        f"* order atoms: x{i}ge{{v}} means x{i} >= v, channelled to the bits both ways.",
+        f"* order literals: x{i}ge{{v}} means x{i} >= v, channelled to the"
+        " bits both ways.",
         "* veripb accepts arrow syntax in .pbp files but not in .opb files, so these",
         "* are the big-M forms of what we would rather have written as",
         f"*     x{i}ge{{v}} ==> {bit_sum(i, ub)} >= v      (_up)",
@@ -58,7 +59,9 @@ def variable_constraints(i, ub):
     for v in range(2, ub + 1):
         out.append(f"@x{i}ge{v}_chain 1 ~x{i}ge{v} 1 x{i}ge{v - 1} >= 1 ;")
 
-    out.append(f"* direct atoms: x{i}eq{{v}} <-> x{i}ge{{v}} and not x{i}ge{{v+1}}")
+    out.append(
+        f"* direct literals: x{i}eq{{v}} <-> x{i}ge{{v}} and not x{i}ge{{v+1}}"
+    )
     for v in range(0, ub + 1):
         # the conjunction that defines x{i}eq{v}, as (name, negated) pairs
         conj = []

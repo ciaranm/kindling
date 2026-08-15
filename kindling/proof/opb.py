@@ -1,9 +1,9 @@
 """The .opb file: what the problem means, in pseudo-Boolean.
 
-Everything here is definitional.  The .opb says what each atom stands for and
-what each constraint requires; it never states a consequence of those things,
-even a convenient one.  Consequences get derived in the proof, where they can
-be checked.
+Everything here is definitional.  The .opb says what each literal stands for
+and what each constraint requires; it never states a consequence of those
+things, even a convenient one.  Consequences get derived in the proof, where
+they can be checked.
 
 Every constraint is labelled, so nothing anywhere needs to track constraint
 numbers.  "Constraint" is doing two jobs in this solver -- the model has them
@@ -60,7 +60,9 @@ class OpbFile:
     def constraints(self) -> list[PbConstraint]:
         return [line for line in self.lines if isinstance(line, PbConstraint)]
 
-    def atoms(self) -> set[str]:
+    def variables(self) -> set[str]:
+        """What the header has to count.  A literal and its negation are one PB
+        variable between them, so the "~" comes off."""
         return {
             literal.lstrip("~")
             for constraint in self.constraints()
@@ -68,7 +70,7 @@ class OpbFile:
         }
 
     def render(self) -> str:
-        constraints = self.constraints()
-        header = f"* #variable= {len(self.atoms())} #constraint= {len(constraints)}"
+        variables, constraints = self.variables(), self.constraints()
+        header = f"* #variable= {len(variables)} #constraint= {len(constraints)}"
         body = [line if isinstance(line, str) else line.render() for line in self.lines]
         return "\n".join([header] + body) + "\n"

@@ -3,7 +3,8 @@ pseudo-Boolean proof version 3.0
 % support x2 = 1 is (1,1), and that tuple needs x1 = 1.  So x2 = 1 goes.
 %
 % Unlike the linear case this one IS reverse unit propagation, and the reason
-% is the encoding: each tuple has a selector atom, the selectors are pinned by
+% is the encoding: each tuple has a selector literal, the selectors are pinned
+% by
 % an at-least-one constraint, and asserting x1eq0 falsifies every selector in
 % turn.  Nothing here needs cutting planes.
 rup x1eq0 ==> 1 ~x2eq1 >= 1 ;
