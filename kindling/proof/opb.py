@@ -9,6 +9,10 @@ Every constraint is labelled, so nothing anywhere needs to track constraint
 numbers.  "Constraint" is doing two jobs in this solver -- the model has them
 and so does the .opb -- so where both are in the room at once, the ones in here
 are the PB constraints.
+
+There is no "* #variable= ... #constraint= ..." line at the top.  Older
+pseudo-Boolean tooling wanted one and veripb 3 does not, so the file starts
+with the first thing worth reading.
 """
 
 from __future__ import annotations
@@ -61,8 +65,9 @@ class OpbFile:
         return [line for line in self.lines if isinstance(line, PbConstraint)]
 
     def variables(self) -> set[str]:
-        """What the header has to count.  A literal and its negation are one PB
-        variable between them, so the "~" comes off."""
+        """Every PB variable mentioned anywhere -- a literal and its negation
+        are one variable between them, so the "~" comes off.  Only the tests
+        need this."""
         return {
             literal.lstrip("~")
             for constraint in self.constraints()
@@ -70,7 +75,5 @@ class OpbFile:
         }
 
     def render(self) -> str:
-        variables, constraints = self.variables(), self.constraints()
-        header = f"* #variable= {len(variables)} #constraint= {len(constraints)}"
         body = [line if isinstance(line, str) else line.render() for line in self.lines]
-        return "\n".join([header] + body) + "\n"
+        return "\n".join(body) + "\n"

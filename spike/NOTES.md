@@ -94,6 +94,12 @@ constraint it wants, and the exercise is deriving it instead of asserting it.
   but it reads like subtraction — another reason for non-negative domains.
 - `conclusion UNSAT;` needs no explicit contradiction reference.
 - `rup >= 1 ;` — an empty sum — is how you close the proof.
+- The `* #variable= ... #constraint= ...` line older pseudo-Boolean tooling
+  wants at the top of an `.opb` is not needed: veripb 3 reads the file without
+  it. The `f` rule survives, but only as an optional check that the expected
+  number of constraints was loaded, and since nothing here ever refers to a
+  constraint by number there is nothing for it to protect. So the first line
+  of a `.pbp` after the version is whatever you wanted to derive first.
 - `g1 g2 ==> 1 xx >= 1` works in a `.pbp` in every position we need: after `rup`,
   after `a` (annotations and all, `a g1 ==> >= 1 : : name ;`), and with a
   labelled result. The antecedent may be negated (`~x3ge5`), and the consequent
