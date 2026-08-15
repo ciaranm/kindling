@@ -1,7 +1,7 @@
 * smoke test: x1, x2 in [0,3]; constraint x1 + x2 <= 3
 *
 * Each variable x{i} is a sum of bits: x{i} = 2*x{i}b1 + 1*x{i}b0.
-* For each value v we name an order atom x{i}ge{v}, meaning "x{i} >= v",
+* For each value v we name an order literal x{i}ge{v}, meaning "x{i} >= v",
 * and channel it to the bits in both directions:
 *   _up:  x{i}ge{v} -> x{i} >= v        bits + v*~ge >= v
 *   _dn:  x{i} >= v -> x{i}ge{v}        (U-bits) + (U-v+1)*ge >= U-v+1

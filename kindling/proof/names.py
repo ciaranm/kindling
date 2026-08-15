@@ -1,13 +1,14 @@
 """What everything is called in the proof.
 
-Atom names are meant to be read.  Variable x3 having the value 2 is "x3eq2",
-and being at least 2 is "x3ge2", so a line of a proof can usually be read out
-loud without consulting anything.
+Names are meant to be read.  Variable x3 having the value 2 is "x3eq2", and
+being at least 2 is "x3ge2", so a line of a proof can usually be read out loud
+without consulting anything.
 
-Two rules from veripb constrain us: an atom name must be at least two
+Two rules from veripb constrain us: a PB variable's name must be at least two
 characters and must start with a letter or an underscore, and although "-" is
 a legal character it reads like subtraction.  Non-negative domains mean no
-name ever contains one.
+name ever contains one.  The "~" of a negated literal is not part of the name,
+so it counts towards neither rule.
 """
 
 from __future__ import annotations

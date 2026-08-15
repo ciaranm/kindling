@@ -97,15 +97,17 @@ def rup_holds(model: Model, constraint: str) -> bool:
 
 @unittest.skipUnless(HAVE_VERIPB, "veripb is not on the path")
 class TestUnitPropagationReach(unittest.TestCase):
-    """Propagators reason about one variable's atoms all the time -- this value
-    is gone because the lower bound moved past it, this bound follows from that
-    one -- and every such step has to be something the checker can do by unit
+    """Propagators reason about one variable's literals all the time -- this
+    value is gone because the lower bound moved past it, this bound follows
+    from that one -- and every such step has to be something the checker can do
+    by unit
     propagation, or the node it happens at will not check.  The encoding has
     no order chain constraints and does not need any; this is the test that
     says so.
 
-    Do not cherry-pick the bounds.  Whether unit propagation gets from one atom
-    to another depends on whether the bound in question pins an individual bit,
+    Do not cherry-pick the bounds.  Whether unit propagation gets from one
+    literal to another depends on whether the bound in question pins an
+    individual bit,
     and hand-picked examples have an awkward habit of being ones that work for
     the wrong reason.  Check every pair, at several domain sizes, including
     ones where the bits can represent more than the domain allows.

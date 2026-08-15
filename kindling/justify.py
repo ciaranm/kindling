@@ -4,18 +4,19 @@ Every narrowing of a domain has to say why, because every narrowing becomes a
 line of the proof and a line of the proof has to be checkable.
 
 What gets logged is an implication: "if all the guesses that got us to this
-node hold, then this atom holds too", and it goes into the proof with an arrow
-in it so that it reads the way it was meant.  That is true at the root and
-not only at the node that noticed it, which is what makes it safe to leave
+node hold, then this literal holds too", and it goes into the proof with an
+arrow in it so that it reads the way it was meant.  That is true at the root
+and not only at the node that noticed it, which is what makes it safe to leave
 lying around -- nothing is ever retracted, so kindling has no deletion in it
 anywhere.
 
 Using the guesses is the crude option, and it is always available.  A real
-solver states a *reason* instead: the handful of atoms the propagator actually
-looked at, which is usually far fewer than every guess made on the way here.
-Both are valid.  What makes the line legal is that reverse unit propagation can
-get from the left-hand side to the right-hand side, and the guesses always
-suffice for that, because between them they determine the whole node.
+solver states a *reason* instead: the handful of literals the propagator
+actually looked at, which is usually far fewer than every guess made on the
+way here.  Both are valid.  What makes the line legal is that reverse unit
+propagation can get from the left-hand side to the right-hand side, and the
+guesses always suffice for that, because between them they determine the whole
+node.
 
 The reason version is worth knowing about even though kindling does not do it,
 because it is the same clause a lazy clause generation solver has to produce to

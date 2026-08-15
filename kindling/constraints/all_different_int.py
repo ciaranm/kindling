@@ -88,7 +88,7 @@ class AllDifferentInt(Constraint):
         Weaken away the variables that are not in the violated set, since they
         are entitled to those values and this argument is not about them.  Then
         add each remaining variable's at-least-one constraint, which says it
-        takes some value somewhere.  Every atom for a variable inside the set
+        takes some value somewhere.  Every literal for a variable inside the set
         and a value inside it cancels, and what survives is
 
             one of these variables takes a value from outside the set
@@ -97,10 +97,10 @@ class AllDifferentInt(Constraint):
         variables are in trouble is that they have lost everything outside.
         Nothing needs saturating: every coefficient is already one.
 
-        The weakening is not strictly load bearing.  Leave it out and what comes
-        out keeps some atoms belonging to variables the argument is not about,
-        and every instance here still checks, because the line at the bottom of
-        the node finishes the job either way.  It is here so that what comes out
+        The weakening is not strictly load bearing.  Leave it out and what
+        comes out keeps some literals belonging to variables the argument is
+        not about, and every instance here still checks, because the line at
+        the bottom of the node finishes the job either way.  It is here so that what comes out
         is the constraint the argument is about, which matters more for reading
         the proof than for passing the checker.
         """

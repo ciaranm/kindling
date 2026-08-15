@@ -141,8 +141,8 @@ code path to the OPB parser should not introduce a new normalisation question.
 
 We are building a small certifying constraint solver for teaching. Its OPB file
 is the first thing a student reads, and it is almost entirely channelling
-constraints between an integer's bit representation and its order atoms — that
-is, reified constraints, several per variable per value. In arrow form they read
-as the definitions they are; in big-M form they need a comment explaining what
-they mean. It is a workaround rather than a blocker, but the readability gap is
-the whole difference for the audience.
+constraints between an integer's bit representation and its order literals —
+that is, reified constraints, several per variable per value. In arrow form
+they read as the definitions they are; in big-M form they need a comment
+explaining what they mean. It is a workaround rather than a blocker, but the
+readability gap is the whole difference for the audience.
