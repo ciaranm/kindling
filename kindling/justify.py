@@ -65,9 +65,9 @@ class Rup:
 
 @dataclass(frozen=True)
 class Pol:
-    """Checked, by cutting planes: a recipe for building a new row out of rows
-    the checker already has, in reverse Polish.  "@a @b + s" means add row b to
-    row a and saturate the result.
+    """Checked, by cutting planes: a recipe for building a new PB constraint out
+    of ones the checker already has, in reverse Polish.  "@a @b + s" means add
+    @b to @a and saturate the result.
 
     The steps do not have to land exactly on the clause being claimed.  For an
     inference, kindling writes the steps and then a rup of the clause, so the

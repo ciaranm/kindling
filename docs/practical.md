@@ -45,7 +45,7 @@ all the others with nothing left in it.
 Everything the solver claims conditionally is written with an arrow.
 `x1eq0 ==> 1 ~x2eq1 >= 1` is "if x1 = 0 then x2 is not 1", and it is one
 pseudo-Boolean constraint and not two: VeriPB carries each atom on the left of
-the arrow into the row negated, so what gets stored is the constraint
+the arrow into the constraint negated, so what gets stored is the
 `1 ~x1eq0 1 ~x2eq1 >= 1` you would otherwise have written out yourself. With
 nothing on the right of it, `x1eq0 ==> >= 1` says that guess leads to a
 contradiction — which is exactly what the line at the bottom of a dead node
@@ -73,8 +73,8 @@ The gap between those two runs is what the rest of this is about.
 `kindling/constraints/table_int.py` removes a value when no tuple can support
 it any more, and asserts that it was allowed to. It is allowed to, and the
 reason is reverse unit propagation: assume the value is still there, and the
-selector atoms fall over one at a time until the row saying *some* tuple is in
-use is contradicted.
+selector atoms fall over one at a time until the constraint saying *some*
+tuple is in use is contradicted.
 
 Replace the two `Assert(...)` with `Rup()`, and make `two-tables` verify.
 
@@ -94,22 +94,23 @@ tables or sums.
 
 ## Exercise 2: negative coefficients
 
-`int_lin_le` justifies a bound with cutting planes: take the row that says what
-the constraint is, and add to it one *channelling* row per term — the row tying
-that variable's bits to the order atom naming its bound. Every bit cancels, and
-what is left is the clause we wanted.
+`int_lin_le` justifies a bound with cutting planes: take `@lin{c}`, the
+pseudo-Boolean constraint saying what the `int_lin_le` is, and add to it one
+*channelling* constraint per term — the one tying that variable's bits to the
+order atom naming its bound. Every bit cancels, and what is left is the clause
+we wanted.
 
 The reference handles positive coefficients. A negative one needs the same sum
 with one thing changed, because a term that counts downwards needs its variable
-bounded from the other side. Look at `channelling`, and at the two rows any
-variable has in the `.opb`:
+bounded from the other side. Look at `channelling`, and at the two constraints
+any variable has in the `.opb`:
 
 ```
 @x1ge3_up 4 x1b2 2 x1b1 1 x1b0 3 ~x1ge3 >= 3 ;
 @x1ge3_dn 4 ~x1b2 2 ~x1b1 1 ~x1b0 5 x1ge3 >= 5 ;
 ```
 
-Those two rows are the arrow constraints
+Those two are the arrow constraints
 
 ```
 x1ge3 ==> 4 x1b2 2 x1b1 1 x1b0 >= 3
@@ -129,27 +130,27 @@ Make `over-budget` verify. Getting it wrong gives `REJECTED` rather than
 `all_different_int` only ever fails — it never removes a value — and it fails
 when it finds a set of variables with fewer values between them than there are
 variables. That argument does not work by unit propagation. It needs adding
-rows up.
+constraints up.
 
 Write `hall_steps` in `kindling/constraints/all_different_int.py`, and swap the
 `Assert` in `propagate` for `Pol(self.hall_steps(variables, values))`.
 
-The rows you have to work with, for a set `S` of variables and the set `U` of
-values they are stuck inside:
+The constraints you have to work with, for a set `S` of variables and the set
+`U` of values they are stuck inside:
 
 * `@amo{c}_{v}` — for each value, at most one of these variables takes it.
 * `@atleast{i}` — each variable takes at least one value. Derived in the
   proof's preamble rather than asserted in the `.opb`, since it is a
   consequence of what the atoms mean rather than something the model says.
 
-Add up the at-most-one rows for the values in `U`, then the at-least-one rows
-for the variables in `S`, and see what cancels. `pol` is reverse Polish, so
-`@a @b + @c +` means add `b` to `a`, then add `c` to that.
+Add up the at-most-one constraints for the values in `U`, then the
+at-least-one ones for the variables in `S`, and see what cancels. `pol` is
+reverse Polish, so `@a @b + @c +` means add `b` to `a`, then add `c` to that.
 
-You will also need `w`, which weakens a row by dropping a term: `@a x3eq1 w`.
-Work out what needs dropping and why. (It turns out the checker will accept
-the proof without it — try that too, and think about what the row you derived
-actually says in each case.)
+You will also need `w`, which weakens a constraint by dropping a term:
+`@a x3eq1 w`. Work out what needs dropping and why. (It turns out the checker
+will accept the proof without it — try that too, and think about what the
+constraint you derived actually says in each case.)
 
 Make `pigeonhole` and `squeeze` verify.
 

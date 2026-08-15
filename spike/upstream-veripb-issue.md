@@ -133,9 +133,9 @@ unpopular in VeriPB 2: the proof-file path already produces the natural form.
 For `x1ge4 ==> 4 x1b2 2 x1b1 1 x1b0 >= 4` it yields exactly
 `4 x1b2 2 x1b1 1 x1b0 4 ~x1ge4 >= 4`, i.e. the antecedent's negation carried at
 the degree as coefficient — which is what `generate_constraints` does at
-`parser.rs:1036-1043`. Deriving a clause through arrow-introduced rows and
-through hand-written big-M rows gives identical results. Adding the same code
-path to the OPB parser should not introduce a new normalisation question.
+`parser.rs:1036-1043`. Deriving a clause through arrow-introduced constraints
+and through hand-written big-M ones gives identical results. Adding the same
+code path to the OPB parser should not introduce a new normalisation question.
 
 ## Why this matters to us
 
