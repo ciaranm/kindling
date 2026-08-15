@@ -3,8 +3,9 @@
 Every narrowing of a domain has to say why, because every narrowing becomes a
 line of the proof and a line of the proof has to be checkable.
 
-What gets logged is a clause: "if all the guesses that got us to this node
-hold, then this atom holds too".  That is true at the root of the search and
+What gets logged is an implication: "if all the guesses that got us to this
+node hold, then this atom holds too", and it goes into the proof with an arrow
+in it so that it reads the way it was meant.  That is true at the root and
 not only at the node that noticed it, which is what makes it safe to leave
 lying around -- nothing is ever retracted, so kindling has no deletion in it
 anywhere.
