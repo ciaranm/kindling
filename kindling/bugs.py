@@ -67,9 +67,10 @@ def linear_off_by_one() -> None:
     IntLinLe.smallest = lambda self, state, position: original(self, state, position) + 1
 
 
-def linear_forgets_a_row() -> None:
-    """The propagation is right.  The derivation leaves out one of the rows it
-    needs, so the proof cannot be made to support a conclusion that is true."""
+def linear_forgets_a_constraint() -> None:
+    """The propagation is right.  The derivation leaves out one of the
+    constraints it needs, so the proof cannot be made to support a conclusion
+    that is true."""
     def steps(self, bounds, ignoring=None):
         del bounds, ignoring
         return [f"@lin{self.index}"]
@@ -81,7 +82,7 @@ BUGS = {
     "table-forgets-a-tuple": table_forgets_a_tuple,
     "all-different-too-eager": all_different_too_eager,
     "linear-off-by-one": linear_off_by_one,
-    "linear-forgets-a-row": linear_forgets_a_row,
+    "linear-forgets-a-constraint": linear_forgets_a_constraint,
 }
 
 

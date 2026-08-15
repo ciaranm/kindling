@@ -61,7 +61,7 @@ class TestBugsAreCaught(unittest.TestCase):
         proof cannot support what it claims."""
         for instance in ("tight-sum", "over-budget"):
             with self.subTest(instance=instance):
-                answer, verdict = run(instance, "linear-forgets-a-row")
+                answer, verdict = run(instance, "linear-forgets-a-constraint")
                 self.assertEqual(answer, "unsatisfiable", "the answer is still right")
                 self.assertEqual(verdict, "REJECTED")
 

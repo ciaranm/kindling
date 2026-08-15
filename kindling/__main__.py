@@ -103,8 +103,8 @@ def over_budget() -> Model:
 
     Like tight-sum this exists so that a justification has to be right rather
     than merely present, but for the other sign.  The budget enters the sum
-    with a negative coefficient, so the row that cancels its bits is the one
-    running the other way, and an int_lin_le that reached for the same
+    with a negative coefficient, so the constraint that cancels its bits is
+    the one running the other way, and an int_lin_le that reached for the same
     direction every time is rejected here and nowhere else in the set.
     """
     model = Model()

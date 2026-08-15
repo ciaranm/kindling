@@ -2,8 +2,9 @@
 
 Coefficients are restricted to +1 and -1.  That is not to make the constraint
 easier to write, but to make it easier to *justify*: with unit coefficients
-every row in the justification enters the sum with multiplier 1, so the whole
-derivation is additions and one saturation, and nothing has to be multiplied.
+every constraint in the justification enters the sum with multiplier 1, so the
+whole derivation is additions and one saturation, and nothing has to be
+multiplied.
 Supporting a general coefficient is one extra "*" in the pol line.
 """
 
@@ -58,24 +59,26 @@ class IntLinLe(Constraint):
         return -state.upper_bound(x)
 
     def channelling(self, position: int, value: int) -> str:
-        """The row tying one of these variables' bits to one of its order atoms.
+        """The constraint tying one of these variables' bits to one of its order
+        atoms.
 
         Which direction depends only on the sign of the coefficient.  A term
-        that counts upwards needs its variable bounded below, and _up is the row
+        that counts upwards needs its variable bounded below, and _up is the one
         that says an order atom forces the bits up; a term that counts downwards
         needs the opposite, and that is _dn.  The whole difference between a
         positive and a negative coefficient, in the proof, is these two letters.
         """
         # EXERCISE 2.  This only knows about terms that count upwards.  A term
         # with a negative coefficient needs its variable bounded from the other
-        # side, and there is a row in the .opb for that too.
+        # side, and there is a constraint in the .opb for that too.
         x = self.scope[position]
         return f"@x{x.index}ge{value}_up"
 
     def bound_values(self, state) -> list[int | None]:
-        """For each term, the order atom whose row will cancel its bits away, or
-        None when the bound is the one it was declared with and there is no atom
-        to cite -- those terms just stay in the row, which costs nothing."""
+        """For each term, the order atom whose constraint will cancel its bits
+        away, or None when the bound is the one it was declared with and there
+        is no atom to cite -- those terms just stay in the sum, which costs
+        nothing."""
         values: list[int | None] = []
         for i, x in enumerate(self.scope):
             if self.coefficients[i] > 0:
@@ -87,8 +90,9 @@ class IntLinLe(Constraint):
         return values
 
     def steps(self, bounds, ignoring: int | None = None) -> list[str]:
-        """Start from the constraint row and add one channelling row per term,
-        cancelling that term's bits and leaving its order atom behind."""
+        """Start from @lin, the PB constraint saying what this int_lin_le means,
+        and add one channelling constraint per term, cancelling that term's bits
+        and leaving its order atom behind."""
         steps = [f"@lin{self.index}"]
         for i, value in enumerate(bounds):
             if i != ignoring and value is not None:
@@ -97,8 +101,8 @@ class IntLinLe(Constraint):
 
     def propagate(self, state) -> Inference:
         # Read once, before anything is narrowed, so that every bound below is
-        # worked out from the same starting point -- and so that the rows the
-        # proof adds are the rows the arithmetic was actually done with.
+        # worked out from the same starting point -- and so that what the proof
+        # adds up is what the arithmetic was actually done with.
         smallest = [self.smallest(state, i) for i in range(len(self.scope))]
         bounds = self.bound_values(state)
         total = sum(smallest)
@@ -109,7 +113,7 @@ class IntLinLe(Constraint):
 
         if total > self.rhs:
             # Even at their smallest these terms overshoot.  Adding every bound
-            # to the constraint row leaves something that cannot be satisfied.
+            # to @lin leaves something that cannot be satisfied.
             if not derivable:
                 return state.fail(Assert("int_lin_le_negative_coefficient"))
             return state.fail(Pol(tuple(self.steps(bounds) + ["s"])))

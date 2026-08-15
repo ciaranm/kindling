@@ -11,10 +11,10 @@ pseudo-Boolean proof version 3.0
 % table: the tuple (1,1) is dead, so x2 = 1 has no support
 rup x1eq0 ==> 1 ~x2eq1 >= 1 ;
 % all_different: x1 and x2 are now both confined to {0}, a Hall violator.
-% Adding the at-most-one row for value 0 to the two at-least-one rows cancels
-% every atom for a value inside the violated set, and what is left says "one of
-% x1, x2 takes a value outside {0}".  That row is true at the root; it is the
-% node's own inferences that make it false here.
+% Adding the at-most-one constraint for value 0 to the two at-least-one ones
+% cancels every atom for a value inside the violated set, and what is left says
+% "one of x1, x2 takes a value outside {0}".  That is true at the root; it is
+% the node's own inferences that make it false here.
 @hall_a pol @amo2_0 @atleast1 + @atleast2 + ;
 % so the node fails: the decision that got us here leads to a contradiction,
 % which is what an arrow with nothing on the right of it says

@@ -6,14 +6,14 @@ search correct, because a complete assignment with a repeat is always a Hall
 violation, and it keeps the interesting part of the constraint down to one
 argument that a proof can be written about.
 
-Written in the variable-value form -- one at-most-one row per value -- rather
-than the more compact form a serious solver would use.  This encoding is what
-makes the Hall violator argument come out as a plain sum of rows, and being
-able to read that argument off the .opb is worth more here than being small.
+Written in the variable-value form -- one at-most-one constraint per value --
+rather than the more compact form a serious solver would use.  This encoding is
+what makes the Hall violator argument come out as a plain sum, and being able
+to read that argument off the .opb is worth more here than being small.
 
-A value only one variable can take still gets its row.  It says nothing on its
-own, but the Hall violator derivation adds up the rows for every value in the
-violated set, and a missing row would leave the sum short.
+A value only one variable can take still gets its constraint.  It says nothing
+on its own, but the Hall violator derivation adds up the constraints for every
+value in the violated set, and a missing one would leave the sum short.
 """
 
 from __future__ import annotations
@@ -84,9 +84,9 @@ class AllDifferentInt(Constraint):
         """EXERCISE 3.  Cutting planes for "these variables will not fit in
         these values".
 
-        The rows available are @amo{c}_{v}, one per value, each saying at most
-        one of these variables takes that value; and @atleast{i}, one per
-        variable, saying it takes at least one value.  Add up the right ones
+        The constraints available are @amo{c}_{v}, one per value, each saying
+        at most one of these variables takes that value; and @atleast{i}, one
+        per variable, saying it takes at least one value.  Add up the right ones
         and see what cancels.  See docs/practical.md.
         """
         raise NotImplementedError("exercise 3")

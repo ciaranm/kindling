@@ -20,7 +20,7 @@ EXAMPLES["01-linear"] = render(
 
 # 02: the same shape with a negative coefficient.  x1 + x2 - x3 <= 0 with
 # x1 >= 3 and x3 <= 4 forces x2 <= 1.  The reason for x3 is an upper bound, so
-# its channelling row is the one going the other way.
+# its channelling constraint is the one going the other way.
 EXAMPLES["02-linear-neg"] = render(
     "x1, x2, x3 in [0,7]; x1 + x2 - x3 <= 0",
     {1: 7, 2: 7, 3: 7},
