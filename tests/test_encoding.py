@@ -1,9 +1,9 @@
 """The variable encoding is either exactly right or it is worthless, so check
 it exhaustively rather than by eyeballing a few constraints.
 
-For a small variable there are few enough assignments to its atoms that we can
-try all of them, and demand that the PB constraints are satisfied by exactly
-the assignments where every atom means what its name says.
+For a small variable there are few enough assignments to its PB variables that
+we can try all of them, and demand that the PB constraints are satisfied by
+exactly the assignments where every literal means what its name says.
 """
 
 import itertools
@@ -15,16 +15,16 @@ from kindling.proof.opb import OpbFile
 
 
 class TestVariableEncoding(unittest.TestCase):
-    def test_constraints_hold_exactly_when_the_atoms_mean_what_they_say(self):
+    def test_constraints_hold_exactly_when_the_literals_mean_what_they_say(self):
         for ub in range(0, 6):
             with self.subTest(ub=ub):
                 opb = OpbFile()
                 define_variable(opb, 1, ub)
                 constraints = opb.constraints()
-                atoms = sorted(opb.atoms())
+                variables = sorted(opb.variables())
 
-                for values in itertools.product([False, True], repeat=len(atoms)):
-                    assignment = dict(zip(atoms, values))
+                for values in itertools.product([False, True], repeat=len(variables)):
+                    assignment = dict(zip(variables, values))
                     x = sum(
                         2**k for k in range(nbits(ub)) if assignment[bit(1, k)]
                     )
@@ -44,14 +44,14 @@ class TestVariableEncoding(unittest.TestCase):
                         f"ub={ub}, x={x}, {assignment}",
                     )
 
-    def test_every_atom_a_propagator_might_use_exists(self):
+    def test_every_literal_a_propagator_might_use_exists(self):
         opb = OpbFile()
         define_variable(opb, 1, 3)
-        atoms = opb.atoms()
+        variables = opb.variables()
         for v in range(0, 4):
-            self.assertIn(eq(1, v), atoms)
+            self.assertIn(eq(1, v), variables)
         for v in range(1, 4):
-            self.assertIn(ge(1, v), atoms)
+            self.assertIn(ge(1, v), variables)
 
     def test_every_constraint_is_labelled(self):
         opb = OpbFile()

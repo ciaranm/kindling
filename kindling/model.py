@@ -1,9 +1,9 @@
 """What a problem looks like before anything happens to it.
 
 Variables are integers with domain [0, ub] -- non-negative, so the bits are
-unsigned and no atom name ever needs a minus sign in it.  They are numbered
-from 1, and the proof calls variable i "x{i}" regardless of what the model
-called it.  The modeller's name survives only in comments.
+unsigned and no name in the proof ever needs a minus sign in it.  They are
+numbered from 1, and the proof calls variable i "x{i}" regardless of what the
+model called it.  The modeller's name survives only in comments.
 """
 
 from __future__ import annotations

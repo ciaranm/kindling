@@ -1,7 +1,7 @@
 * x1, x2, x3 in [0,7]; x1 + x2 + x3 <= 9
 * --- x1 in [0, 7] ---
 * x1 = 4*x1b2 + 2*x1b1 + 1*x1b0
-* order atoms: x1ge{v} means x1 >= v, channelled to the bits both ways.
+* order literals: x1ge{v} means x1 >= v, channelled to the bits both ways.
 * veripb accepts arrow syntax in .pbp files but not in .opb files, so these
 * are the big-M forms of what we would rather have written as
 *     x1ge{v} ==> 4 x1b2 2 x1b1 1 x1b0 >= v      (_up)
@@ -26,7 +26,7 @@
 @x1ge5_chain 1 ~x1ge5 1 x1ge4 >= 1 ;
 @x1ge6_chain 1 ~x1ge6 1 x1ge5 >= 1 ;
 @x1ge7_chain 1 ~x1ge7 1 x1ge6 >= 1 ;
-* direct atoms: x1eq{v} <-> x1ge{v} and not x1ge{v+1}
+* direct literals: x1eq{v} <-> x1ge{v} and not x1ge{v+1}
 @x1eq0_up0 1 ~x1eq0 1 ~x1ge1 >= 1 ;
 @x1eq0_dn 1 x1eq0 1 x1ge1 >= 1 ;
 @x1eq1_up0 1 ~x1eq1 1 x1ge1 >= 1 ;
@@ -51,7 +51,7 @@
 @x1eq7_dn 1 x1eq7 1 ~x1ge7 >= 1 ;
 * --- x2 in [0, 7] ---
 * x2 = 4*x2b2 + 2*x2b1 + 1*x2b0
-* order atoms: x2ge{v} means x2 >= v, channelled to the bits both ways.
+* order literals: x2ge{v} means x2 >= v, channelled to the bits both ways.
 * veripb accepts arrow syntax in .pbp files but not in .opb files, so these
 * are the big-M forms of what we would rather have written as
 *     x2ge{v} ==> 4 x2b2 2 x2b1 1 x2b0 >= v      (_up)
@@ -76,7 +76,7 @@
 @x2ge5_chain 1 ~x2ge5 1 x2ge4 >= 1 ;
 @x2ge6_chain 1 ~x2ge6 1 x2ge5 >= 1 ;
 @x2ge7_chain 1 ~x2ge7 1 x2ge6 >= 1 ;
-* direct atoms: x2eq{v} <-> x2ge{v} and not x2ge{v+1}
+* direct literals: x2eq{v} <-> x2ge{v} and not x2ge{v+1}
 @x2eq0_up0 1 ~x2eq0 1 ~x2ge1 >= 1 ;
 @x2eq0_dn 1 x2eq0 1 x2ge1 >= 1 ;
 @x2eq1_up0 1 ~x2eq1 1 x2ge1 >= 1 ;
@@ -101,7 +101,7 @@
 @x2eq7_dn 1 x2eq7 1 ~x2ge7 >= 1 ;
 * --- x3 in [0, 7] ---
 * x3 = 4*x3b2 + 2*x3b1 + 1*x3b0
-* order atoms: x3ge{v} means x3 >= v, channelled to the bits both ways.
+* order literals: x3ge{v} means x3 >= v, channelled to the bits both ways.
 * veripb accepts arrow syntax in .pbp files but not in .opb files, so these
 * are the big-M forms of what we would rather have written as
 *     x3ge{v} ==> 4 x3b2 2 x3b1 1 x3b0 >= v      (_up)
@@ -126,7 +126,7 @@
 @x3ge5_chain 1 ~x3ge5 1 x3ge4 >= 1 ;
 @x3ge6_chain 1 ~x3ge6 1 x3ge5 >= 1 ;
 @x3ge7_chain 1 ~x3ge7 1 x3ge6 >= 1 ;
-* direct atoms: x3eq{v} <-> x3ge{v} and not x3ge{v+1}
+* direct literals: x3eq{v} <-> x3ge{v} and not x3ge{v+1}
 @x3eq0_up0 1 ~x3eq0 1 ~x3ge1 >= 1 ;
 @x3eq0_dn 1 x3eq0 1 x3ge1 >= 1 ;
 @x3eq1_up0 1 ~x3eq1 1 x3ge1 >= 1 ;

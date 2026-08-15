@@ -3,7 +3,7 @@
 Every variable gets all three layers, written out in full the moment it is
 defined.  Nothing is created lazily, which costs a lot of constraints and buys
 the thing that matters here: at no point does anyone have to think about
-whether an atom exists yet.
+whether a literal exists yet.
 
     bits    x{i}b{k}     x{i} = sum of 2^k * x{i}b{k}
     order   x{i}ge{v}    x{i} >= v
@@ -11,20 +11,23 @@ whether an atom exists yet.
 
 The layers are not interchangeable.  Linear constraints are written over the
 bits, because that is the only layer where arithmetic is cheap.  Propagators
-reason in order and direct atoms, because that is what a domain is made of.
+reason in order and direct literals, because that is what a domain is made
+of.
 Moving between the two is what most of a kindling proof is doing, and the
 channelling constraints below are what makes it possible.
 
 An order encoding usually also carries chain constraints saying x >= v implies
 x >= v-1.  There are none here, and they are not an oversight: with the bits
-underneath, every order and direct atom of a variable is already connected to
+underneath, every order and direct literal of a variable is already connected
+to
 every other one through them, so the chain is not merely implied but implied
 *by unit propagation*, which is the part that actually matters.  Checking an
 implication means assuming both the premise and the negated conclusion, and
-whichever of those pins some bits does the work -- asserting an order atom
+whichever of those pins some bits does the work -- asserting an order literal
 bounds the bits from below, negating one bounds them from above, and between
-them nothing is left.  tests/test_proof_model.py checks that every atom-to-atom
-implication really is reverse unit propagation, over several domain sizes,
+them nothing is left.  tests/test_proof_model.py checks that every
+literal-to-literal implication really is reverse unit propagation, over
+several domain sizes,
 because this is the sort of claim that is easy to believe and wrong.
 """
 
@@ -35,7 +38,7 @@ from .opb import OpbFile
 
 
 def define_variable(opb: OpbFile, index: int, ub: int, name: str = "") -> None:
-    """Write every constraint that says what the atoms of one variable mean."""
+    """Write every constraint that says what one variable's literals mean."""
     n, ceiling = nbits(ub), top(ub)
     value = " + ".join(f"{2**k}*x{index}b{k}" for k in reversed(range(n)))
 
@@ -55,7 +58,7 @@ def define_variable(opb: OpbFile, index: int, ub: int, name: str = "") -> None:
     opb.comment(f"    x{index}ge{{v}} ==> {value} >= v      (_up)")
     opb.comment(f"    x{index}ge{{v}} <== {value} >= v      (_dn)")
     for v in range(1, ub + 1):
-        # x{i}ge{v} -> x{i} >= v.  If the atom is false the v pays the degree.
+        # x{i}ge{v} -> x{i} >= v.  If the literal is false, v pays the degree.
         opb.constraint(
             f"x{index}ge{v}_up", bits(index, ub) + [(v, neg(ge(index, v)))], ">=", v
         )
