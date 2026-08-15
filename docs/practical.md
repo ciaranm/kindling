@@ -44,16 +44,16 @@ all the others with nothing left in it.
 
 Everything the solver claims conditionally is written with an arrow.
 `x1eq0 ==> 1 ~x2eq1 >= 1` is "if x1 = 0 then x2 is not 1", and it is one
-pseudo-Boolean constraint and not two: VeriPB carries each atom on the left of
-the arrow into the constraint negated, so what gets stored is the
+pseudo-Boolean constraint and not two: VeriPB carries each literal on the left
+of the arrow into the constraint negated, so what gets stored is the
 `1 ~x1eq0 1 ~x2eq1 >= 1` you would otherwise have written out yourself. With
 nothing on the right of it, `x1eq0 ==> >= 1` says that guess leads to a
 contradiction — which is exactly what the line at the bottom of a dead node
 needs to say, and `rup >= 1 ;` is that line with the last guess gone too.
 
 Then look at `/tmp/ag.opb`, which says what the problem means. Most of it is
-the encoding of the variables — every integer gets bits, an atom for each
-`>= v`, and an atom for each `= v`, all written out in full.
+the encoding of the variables — every integer gets bits, a literal for each
+`>= v`, and a literal for each `= v`, all written out in full.
 
 There is a switch for leaving the propagators out of the proof altogether:
 
@@ -73,7 +73,7 @@ The gap between those two runs is what the rest of this is about.
 `kindling/constraints/table_int.py` removes a value when no tuple can support
 it any more, and asserts that it was allowed to. It is allowed to, and the
 reason is reverse unit propagation: assume the value is still there, and the
-selector atoms fall over one at a time until the constraint saying *some*
+selector literals fall over one at a time until the constraint saying *some*
 tuple is in use is contradicted.
 
 Replace the two `Assert(...)` with `Rup()`, and make `two-tables` verify.
@@ -97,8 +97,8 @@ tables or sums.
 `int_lin_le` justifies a bound with cutting planes: take `@lin{c}`, the
 pseudo-Boolean constraint saying what the `int_lin_le` is, and add to it one
 *channelling* constraint per term — the one tying that variable's bits to the
-order atom naming its bound. Every bit cancels, and what is left is the clause
-we wanted.
+order literal naming its bound. Every bit cancels, and what is left is the
+clause we wanted.
 
 The reference handles positive coefficients. A negative one needs the same sum
 with one thing changed, because a term that counts downwards needs its variable
@@ -119,8 +119,8 @@ x1ge3 <== 4 x1b2 2 x1b1 1 x1b0 >= 3
 
 spelled out the long way round, because VeriPB implements the arrow in proof
 files but not in `.opb` files yet. Read them as the definitions they are: the
-atom being true forces the bits up, and the bits being big enough forces the
-atom. The `.opb` says so in a comment above every variable's block.
+literal being true forces the bits up, and the bits being big enough forces
+the literal. The `.opb` says so in a comment above every variable's block.
 
 Make `over-budget` verify. Getting it wrong gives `REJECTED` rather than
 `UNDER ASSERTIONS`, so you will know.
@@ -141,7 +141,7 @@ The constraints you have to work with, for a set `S` of variables and the set
 * `@amo{c}_{v}` — for each value, at most one of these variables takes it.
 * `@atleast{i}` — each variable takes at least one value. Derived in the
   proof's preamble rather than asserted in the `.opb`, since it is a
-  consequence of what the atoms mean rather than something the model says.
+  consequence of what the literals mean rather than something the model says.
 
 Add up the at-most-one constraints for the values in `U`, then the
 at-least-one ones for the variables in `S`, and see what cancels. `pol` is

@@ -2,7 +2,7 @@
 * --- x1 in [0, 2] ---
 * x1 = 2*x1b1 + 1*x1b0
 @x1_ub 2 x1b1 1 x1b0 <= 2 ;
-* order atoms: x1ge{v} means x1 >= v, channelled to the bits both ways.
+* order literals: x1ge{v} means x1 >= v, channelled to the bits both ways.
 * veripb accepts arrow syntax in .pbp files but not in .opb files, so these
 * are the big-M forms of what we would rather have written as
 *     x1ge{v} ==> 2 x1b1 1 x1b0 >= v      (_up)
@@ -12,7 +12,7 @@
 @x1ge2_up 2 x1b1 1 x1b0 2 ~x1ge2 >= 2 ;
 @x1ge2_dn 2 ~x1b1 1 ~x1b0 2 x1ge2 >= 2 ;
 @x1ge2_chain 1 ~x1ge2 1 x1ge1 >= 1 ;
-* direct atoms: x1eq{v} <-> x1ge{v} and not x1ge{v+1}
+* direct literals: x1eq{v} <-> x1ge{v} and not x1ge{v+1}
 @x1eq0_up0 1 ~x1eq0 1 ~x1ge1 >= 1 ;
 @x1eq0_dn 1 x1eq0 1 x1ge1 >= 1 ;
 @x1eq1_up0 1 ~x1eq1 1 x1ge1 >= 1 ;
@@ -23,7 +23,7 @@
 * --- x2 in [0, 2] ---
 * x2 = 2*x2b1 + 1*x2b0
 @x2_ub 2 x2b1 1 x2b0 <= 2 ;
-* order atoms: x2ge{v} means x2 >= v, channelled to the bits both ways.
+* order literals: x2ge{v} means x2 >= v, channelled to the bits both ways.
 * veripb accepts arrow syntax in .pbp files but not in .opb files, so these
 * are the big-M forms of what we would rather have written as
 *     x2ge{v} ==> 2 x2b1 1 x2b0 >= v      (_up)
@@ -33,7 +33,7 @@
 @x2ge2_up 2 x2b1 1 x2b0 2 ~x2ge2 >= 2 ;
 @x2ge2_dn 2 ~x2b1 1 ~x2b0 2 x2ge2 >= 2 ;
 @x2ge2_chain 1 ~x2ge2 1 x2ge1 >= 1 ;
-* direct atoms: x2eq{v} <-> x2ge{v} and not x2ge{v+1}
+* direct literals: x2eq{v} <-> x2ge{v} and not x2ge{v+1}
 @x2eq0_up0 1 ~x2eq0 1 ~x2ge1 >= 1 ;
 @x2eq0_dn 1 x2eq0 1 x2ge1 >= 1 ;
 @x2eq1_up0 1 ~x2eq1 1 x2ge1 >= 1 ;
@@ -44,7 +44,7 @@
 * --- x3 in [0, 2] ---
 * x3 = 2*x3b1 + 1*x3b0
 @x3_ub 2 x3b1 1 x3b0 <= 2 ;
-* order atoms: x3ge{v} means x3 >= v, channelled to the bits both ways.
+* order literals: x3ge{v} means x3 >= v, channelled to the bits both ways.
 * veripb accepts arrow syntax in .pbp files but not in .opb files, so these
 * are the big-M forms of what we would rather have written as
 *     x3ge{v} ==> 2 x3b1 1 x3b0 >= v      (_up)
@@ -54,7 +54,7 @@
 @x3ge2_up 2 x3b1 1 x3b0 2 ~x3ge2 >= 2 ;
 @x3ge2_dn 2 ~x3b1 1 ~x3b0 2 x3ge2 >= 2 ;
 @x3ge2_chain 1 ~x3ge2 1 x3ge1 >= 1 ;
-* direct atoms: x3eq{v} <-> x3ge{v} and not x3ge{v+1}
+* direct literals: x3eq{v} <-> x3ge{v} and not x3ge{v+1}
 @x3eq0_up0 1 ~x3eq0 1 ~x3ge1 >= 1 ;
 @x3eq0_dn 1 x3eq0 1 x3ge1 >= 1 ;
 @x3eq1_up0 1 ~x3eq1 1 x3ge1 >= 1 ;
@@ -65,7 +65,7 @@
 * --- x4 in [0, 2] ---
 * x4 = 2*x4b1 + 1*x4b0
 @x4_ub 2 x4b1 1 x4b0 <= 2 ;
-* order atoms: x4ge{v} means x4 >= v, channelled to the bits both ways.
+* order literals: x4ge{v} means x4 >= v, channelled to the bits both ways.
 * veripb accepts arrow syntax in .pbp files but not in .opb files, so these
 * are the big-M forms of what we would rather have written as
 *     x4ge{v} ==> 2 x4b1 1 x4b0 >= v      (_up)
@@ -75,7 +75,7 @@
 @x4ge2_up 2 x4b1 1 x4b0 2 ~x4ge2 >= 2 ;
 @x4ge2_dn 2 ~x4b1 1 ~x4b0 2 x4ge2 >= 2 ;
 @x4ge2_chain 1 ~x4ge2 1 x4ge1 >= 1 ;
-* direct atoms: x4eq{v} <-> x4ge{v} and not x4ge{v+1}
+* direct literals: x4eq{v} <-> x4ge{v} and not x4ge{v+1}
 @x4eq0_up0 1 ~x4eq0 1 ~x4ge1 >= 1 ;
 @x4eq0_dn 1 x4eq0 1 x4ge1 >= 1 ;
 @x4eq1_up0 1 ~x4eq1 1 x4ge1 >= 1 ;

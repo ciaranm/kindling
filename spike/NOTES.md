@@ -19,13 +19,13 @@ supposed to be rejected.
 ## Findings
 
 **The linear recipe.** One `pol`: `@lin{c}`, which is what the model said,
-plus one channelling constraint per atom in the clause — one for each reason
-atom and one for the atom being inferred — then `s`. Every bit cancels against
-its own negation, leaving only the big-M coefficients, and saturation turns
-those into the clause. With coefficients restricted to ±1 everything enters the
-sum with multiplier 1, so the whole derivation is `+` and `s`. A negative
-coefficient changes exactly one thing: the reason is an upper bound, so the
-`_dn` constraint is added instead of the `_up` one.
+plus one channelling constraint per literal in the clause — one for each
+reason literal and one for the literal being inferred — then `s`. Every bit
+cancels against its own negation, leaving only the big-M coefficients, and
+saturation turns those into the clause. With coefficients restricted to ±1
+everything enters the sum with multiplier 1, so the whole derivation is `+` and
+`s`. A negative coefficient changes exactly one thing: the reason is an upper
+bound, so the `_dn` constraint is added instead of the `_up` one.
 
 **RUP sometimes works by accident, and that is a trap.** The claim "linear
 inference is not RUP under a bits encoding" is true but not unconditionally. A
@@ -42,28 +42,27 @@ This is worth turning into a discussion point rather than hiding.
 
 **The Hall violator, and the general idiom.** Summing the at-most-one
 constraints for the values in the violated set with the at-least-one ones for
-the variables in it cancels every atom inside the set and leaves "one of these
-variables takes a value outside this set". That is unconditionally true, so it
-can be derived without reference to the trail; it is the node's own logged
-inferences that make it false. The pattern generalises and is the thing to
-teach: **`pol` derives
-something true at the root, `rup` consumes it in context.** Students never have
-to reason about decisions inside a `pol`.
+the variables in it cancels every literal inside the set and leaves "one of
+these variables takes a value outside this set". That is unconditionally true,
+so it can be derived without reference to the trail; it is the node's own
+logged inferences that make it false. The pattern generalises and is the thing
+to teach: **`pol` derives something true at the root, `rup` consumes it in
+context.** Students never have to reason about decisions inside a `pol`.
 
 **At-least-one is derived, not assumed.** `sum over v of x{i}eq{v} >= 1` is a
-consequence of the direct-atom definitions, not an axiom, and summing the
-`_dn` constraints derives it in one `pol` — every order atom cancels against
-its own negation and the telescope collapses. Cheap, honest, and it makes a
-good warm-up because it is mechanical.
+consequence of the direct literals' definitions, not an axiom, and summing
+the `_dn` constraints derives it in one `pol` — every order literal cancels
+against its own negation and the telescope collapses. Cheap, honest, and it
+makes a good warm-up because it is mechanical.
 
 **Search scaffolding is tiny.** One `rup` per failed node, saying that node's
 decisions lead to a contradiction, and one `rup >= 1` at the end. `05-search` is
 the whole thing, and it stays honest even when every propagator is asserted.
 
 **Everything conditional is written with an arrow.** Every line either a
-propagator or the search contributes is of the form "if these atoms hold then
-that", and `guesses ==> consequent` says so where `1 ~guess ... >= 1` made the
-reader normalise it in their head. The two forms are the same constraint —
+propagator or the search contributes is of the form "if these literals hold
+then that", and `guesses ==> consequent` says so where `1 ~guess ... >= 1` made
+the reader normalise it in their head. The two forms are the same constraint —
 `generate_constraints` carries each antecedent's negation at the degree, and
 with a clause the degree is one — so this is presentation and nothing else, and
 `01-linear` fails identically in either notation without its `pol`. A backtrack

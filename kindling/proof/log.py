@@ -3,7 +3,7 @@
 The proof has two kinds of line in it and they have very different characters.
 
 Propagators contribute *implications*: "if the guesses that got us here all
-held, then this atom holds".  Those are true at the root of the search, not
+held, then this literal holds".  Those are true at the root of the search, not
 just at the node that noticed them, which is what makes them safe to leave
 lying around -- nothing ever has to be retracted, so there is no deletion
 anywhere in kindling.  See justify.py for why the guesses, and what a real
@@ -36,9 +36,9 @@ closes the proof; on the right of an arrow it says the guesses on the left
 cannot all hold."""
 
 
-def holds(atom: str) -> str:
-    """The constraint saying this atom is true."""
-    return f"1 {atom} >= 1"
+def holds(literal: str) -> str:
+    """The constraint saying this literal is true."""
+    return f"1 {literal} >= 1"
 
 
 def given(guesses, consequent: str) -> str:
@@ -69,7 +69,7 @@ class NoProof:
     def preamble(self, model: Model) -> None:
         pass
 
-    def infer(self, atom: str, because, guesses) -> None:
+    def infer(self, literal: str, because, guesses) -> None:
         pass
 
     def failed(self, because, guesses) -> None:
@@ -107,15 +107,15 @@ class ProofLog(NoProof):
     def preamble(self, model: Model) -> None:
         """Every variable takes at least one of its values.
 
-        That is a consequence of what the direct atoms mean rather than
+        That is a consequence of what the direct literals mean rather than
         something the model says, so the .opb does not assert it and we derive
         it here.  Adding up the constraints that define x = v, for each v in
-        turn, makes every order atom cancel against its own negation, and the
-        telescope collapses to exactly this.  all_different needs it; nothing
-        else does.
+        turn, makes every order literal cancel against its own negation, and
+        the telescope collapses to exactly this.  all_different needs it;
+        nothing else does.
         """
         self.comment("every variable takes at least one value, by telescoping")
-        self.comment("the constraints that define its direct atoms")
+        self.comment("the constraints that define its direct literals")
         for x in model.variables:
             steps = [f"@x{x.index}eq0_dn"]
             for v in range(1, x.ub + 1):
@@ -123,13 +123,13 @@ class ProofLog(NoProof):
             self.write(f"@atleast{x.index} pol {' '.join(steps)} ;")
         self.comment()
 
-    def infer(self, atom: str, because, guesses) -> None:
-        """One propagation: the guesses hold, so this atom holds too."""
+    def infer(self, literal: str, because, guesses) -> None:
+        """One propagation: the guesses hold, so this literal holds too."""
         if not self.justifications:
             return
         if isinstance(because, Pol):
             self.steps(because)
-        self.claim(given(guesses, holds(atom)), because)
+        self.claim(given(guesses, holds(literal)), because)
 
     def failed(self, because, guesses) -> None:
         """A propagator says this node is hopeless.

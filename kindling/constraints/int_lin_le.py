@@ -60,13 +60,14 @@ class IntLinLe(Constraint):
 
     def channelling(self, position: int, value: int) -> str:
         """The constraint tying one of these variables' bits to one of its order
-        atoms.
+        literals.
 
         Which direction depends only on the sign of the coefficient.  A term
-        that counts upwards needs its variable bounded below, and _up is the one
-        that says an order atom forces the bits up; a term that counts downwards
-        needs the opposite, and that is _dn.  The whole difference between a
-        positive and a negative coefficient, in the proof, is these two letters.
+        that counts upwards needs its variable bounded below, and _up is the
+        one saying an order literal forces the bits up; a term that counts
+        downwards needs the opposite, and that is _dn.  The whole difference
+        between a positive and a negative coefficient, in the proof, is these
+        two letters.
         """
         # EXERCISE 2.  This only knows about terms that count upwards.  A term
         # with a negative coefficient needs its variable bounded from the other
@@ -75,10 +76,10 @@ class IntLinLe(Constraint):
         return f"@x{x.index}ge{value}_up"
 
     def bound_values(self, state) -> list[int | None]:
-        """For each term, the order atom whose constraint will cancel its bits
-        away, or None when the bound is the one it was declared with and there
-        is no atom to cite -- those terms just stay in the sum, which costs
-        nothing."""
+        """For each term, the order literal whose constraint will cancel its
+        bits away, or None when the bound is the one it was declared with and
+        there is no literal to cite -- those terms just stay in the sum, which
+        costs nothing."""
         values: list[int | None] = []
         for i, x in enumerate(self.scope):
             if self.coefficients[i] > 0:
@@ -92,7 +93,7 @@ class IntLinLe(Constraint):
     def steps(self, bounds, ignoring: int | None = None) -> list[str]:
         """Start from @lin, the PB constraint saying what this int_lin_le means,
         and add one channelling constraint per term, cancelling that term's bits
-        and leaving its order atom behind."""
+        and leaving its order literal behind."""
         steps = [f"@lin{self.index}"]
         for i, value in enumerate(bounds):
             if i != ignoring and value is not None:

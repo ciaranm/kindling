@@ -1,6 +1,6 @@
 """table_int: these variables must jointly take one of these tuples.
 
-Each tuple gets a selector atom, one constraint says some tuple is in use, and
+Each tuple gets a selector literal, one constraint says some tuple is in use,
 tuple in use forces every one of its values.  That is the whole encoding, and
 it is what makes table propagation checkable by reverse unit propagation: the
 values a variable no longer has knock out selectors, and once every selector is
