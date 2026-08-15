@@ -8,7 +8,7 @@ pseudo-Boolean proof version 3.0
 % cancels its bits is the "_dn" channelling row rather than the "_up" one.
 % That is the entire content of the negative-coefficient case.
 pol @lin1 @x1ge3_up + @x3ge5_dn + @x2ge2_up + s ;
-rup 1 ~x1ge3 1 x3ge5 1 ~x2ge2 >= 1 ;
+rup x1ge3 ~x3ge5 ==> 1 ~x2ge2 >= 1 ;
 output NONE;
 conclusion NONE;
 end pseudo-Boolean proof;

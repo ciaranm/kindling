@@ -6,7 +6,7 @@ pseudo-Boolean proof version 3.0
 % is the encoding: each tuple has a selector atom, the selectors are pinned by
 % an at-least-one row, and asserting x1eq0 falsifies every selector in turn.
 % Nothing here needs cutting planes.
-rup 1 ~x1eq0 1 ~x2eq1 >= 1 ;
+rup x1eq0 ==> 1 ~x2eq1 >= 1 ;
 output NONE;
 conclusion NONE;
 end pseudo-Boolean proof;

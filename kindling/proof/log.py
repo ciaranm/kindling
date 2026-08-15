@@ -9,15 +9,18 @@ lying around -- nothing ever has to be retracted, so there is no deletion
 anywhere in kindling.  See justify.py for why the guesses, and what a real
 solver would say instead.
 
-The search contributes one line per failed node, negating the decisions that
-led to it.  That line is reverse unit propagation every time and needs no help
-from anyone: replaying the implications above under those decisions reaches
-the same contradiction the solver reached.  So the entire proof of the search
-is one line per node, and all the difficulty lives in the propagators, which
-is where we want the students looking.
+The search contributes one line per failed node, saying that the decisions
+that led there cannot all hold.  That line is reverse unit propagation every
+time and needs no help from anyone: replaying the implications above under
+those decisions reaches the same contradiction the solver reached.  So the
+entire proof of the search is one line per node, and all the difficulty lives
+in the propagators, which is where we want the students looking.
 
-The last failed node is the root, whose decision list is empty, so the line
-that closes the proof is the same line as all the others with nothing in it.
+Both kinds are written with veripb's arrow, so a line of the proof says the
+implication it means rather than the row it becomes.  The last failed node is
+the root, whose decision list is empty, so nothing is conditional on anything,
+and the line that closes the proof is the same line as all the others with
+everything left out of it.
 """
 
 from __future__ import annotations
@@ -26,25 +29,33 @@ from typing import TextIO
 
 from ..justify import Assert, Pol
 from ..model import Model
-from .names import neg
+
+CONTRADICTION = ">= 1"
+"""A sum of nothing, which cannot reach one.  On its own it is the line that
+closes the proof; on the right of an arrow it says the guesses on the left
+cannot all hold."""
 
 
-def clause(literals) -> str:
-    """A disjunction, as a pseudo-Boolean constraint.  An empty one is a
-    contradiction, and comes out as ">= 1" with nothing on the left."""
-    terms = " ".join(f"1 {lit}" for lit in literals)
-    return f"{terms} >= 1".lstrip()
+def holds(atom: str) -> str:
+    """The constraint saying this atom is true."""
+    return f"1 {atom} >= 1"
 
 
-def inference_clause(atom: str, guesses) -> list[str]:
-    """"if the guesses all held then this atom holds", as a disjunction."""
-    return [neg(g) for g in guesses] + [atom]
+def given(guesses, consequent: str) -> str:
+    """"if all of these hold, then that", in veripb's notation.
 
+    `g1 g2 ==> 1 xx >= 1` is one pseudo-Boolean constraint and not two: the
+    checker reads the arrow and carries each guess's negation into the row at
+    the degree, so what it ends up with here is "~g1 or ~g2 or xx".  We could
+    write that row out ourselves and not a thing about the checking would
+    change.  The arrow is here because a proof is for reading, and this way a
+    line of it says what the propagator meant rather than what it normalises
+    to.
 
-def failure_clause(guesses) -> list[str]:
-    """"the guesses cannot all hold at once", as a disjunction.  A failure has
-    no inferred atom, so this is the same thing with nothing on the end."""
-    return [neg(g) for g in guesses]
+    With nothing to be conditional on there is no arrow, and the consequent
+    stands by itself.
+    """
+    return f"{' '.join(guesses)} ==> {consequent}" if guesses else consequent
 
 
 class NoProof:
@@ -115,10 +126,9 @@ class ProofLog(NoProof):
         """One propagation: the guesses hold, so this atom holds too."""
         if not self.justifications:
             return
-        literals = inference_clause(atom, guesses)
         if isinstance(because, Pol):
             self.steps(because)
-        self.claim(literals, because)
+        self.claim(given(guesses, holds(atom)), because)
 
     def failed(self, because, guesses) -> None:
         """A propagator says this node is hopeless.
@@ -133,20 +143,20 @@ class ProofLog(NoProof):
         if isinstance(because, Pol):
             self.steps(because)
         elif isinstance(because, Assert):
-            self.claim(failure_clause(guesses), because)
+            self.claim(given(guesses, CONTRADICTION), because)
 
     def steps(self, because: Pol) -> None:
         self.write(f"pol {' '.join(because.steps)} ;")
 
-    def claim(self, literals, because) -> None:
+    def claim(self, constraint: str, because) -> None:
         if isinstance(because, Assert):
             self.assertions.append(because.name)
-            self.write(f"a {clause(literals)} : : {because.name} ;")
+            self.write(f"a {constraint} : : {because.name} ;")
         else:
-            self.write(f"rup {clause(literals)} ;")
+            self.write(f"rup {constraint} ;")
 
     def node_failed(self, decisions) -> None:
-        self.write(f"rup {clause([neg(d) for d in decisions])} ;")
+        self.write(f"rup {given(decisions, CONTRADICTION)} ;")
 
     def finish(self, proved_unsatisfiable: bool) -> None:
         self.write("output NONE;")

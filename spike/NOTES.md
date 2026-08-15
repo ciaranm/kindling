@@ -54,9 +54,20 @@ consequence of the direct-atom definitions, not an axiom, and summing the
 negation and the telescope collapses. Cheap, honest, and it makes a good warm-up
 because it is mechanical.
 
-**Search scaffolding is tiny.** One `rup` per failed node, negating that node's
-decisions, and one `rup >= 1` at the end. `05-search` is the whole thing, and it
-stays honest even when every propagator is asserted.
+**Search scaffolding is tiny.** One `rup` per failed node, saying that node's
+decisions lead to a contradiction, and one `rup >= 1` at the end. `05-search` is
+the whole thing, and it stays honest even when every propagator is asserted.
+
+**Everything conditional is written with an arrow.** Every line either a
+propagator or the search contributes is of the form "if these atoms hold then
+that", and `guesses ==> consequent` says so where `1 ~guess ... >= 1` made the
+reader normalise it in their head. The two forms are the same constraint —
+`generate_constraints` carries each antecedent's negation at the degree, and
+with a clause the degree is one — so this is presentation and nothing else, and
+`01-linear` fails identically in either notation without its `pol`. A backtrack
+constraint is the case with nothing on the right: `x1eq0 ==> >= 1` is "that
+decision cannot hold", and the root's version of it, with nothing on the left
+either, is the line that closes the proof.
 
 **The assertion form works exactly as hoped.** `search-assertions.pbp` is
 `search.pbp` with the four propagator justifications replaced by `a`, and the
@@ -82,6 +93,10 @@ it wants, and the exercise is deriving it instead of asserting it.
   but it reads like subtraction — another reason for non-negative domains.
 - `conclusion UNSAT;` needs no explicit contradiction reference.
 - `rup >= 1 ;` — an empty sum — is how you close the proof.
+- `g1 g2 ==> 1 xx >= 1` works in a `.pbp` in every position we need: after `rup`,
+  after `a` (annotations and all, `a g1 ==> >= 1 : : name ;`), and with a
+  labelled result. The antecedent may be negated (`~x3ge5`), and the consequent
+  may be empty, which is how a contradiction is stated conditionally.
 
 ## Two upstream bugs found
 
@@ -102,4 +117,6 @@ Until (1) is fixed the channelling rows are written as their big-M forms, with
 the arrow form they stand for in a comment above each variable's block. The
 arrow form in the `.pbp` normalises to exactly the same row: deriving the
 `01-linear` clause entirely through arrow-introduced channelling rows gives the
-identical result, and fails identically without the `pol`.
+identical result, and fails identically without the `pol`. So the split is
+between the two files rather than between two notations: the `.pbp` says what it
+means, and the `.opb` will too once (1) lands.
