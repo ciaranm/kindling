@@ -38,7 +38,7 @@ class Constraint:
         raise NotImplementedError
 
     def define_proof_model(self, opb) -> None:
-        """Write the rows that say what this constraint means."""
+        """Write the PB constraints that say what this constraint means."""
         raise NotImplementedError
 
     def propagate(self, state):

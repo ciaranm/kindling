@@ -17,10 +17,10 @@ entire proof of the search is one line per node, and all the difficulty lives
 in the propagators, which is where we want the students looking.
 
 Both kinds are written with veripb's arrow, so a line of the proof says the
-implication it means rather than the row it becomes.  The last failed node is
-the root, whose decision list is empty, so nothing is conditional on anything,
-and the line that closes the proof is the same line as all the others with
-everything left out of it.
+implication it means rather than the constraint it becomes.  The last failed
+node is the root, whose decision list is empty, so nothing is conditional on
+anything, and the line that closes the proof is the same line as all the
+others with everything left out of it.
 """
 
 from __future__ import annotations
@@ -45,12 +45,12 @@ def given(guesses, consequent: str) -> str:
     """"if all of these hold, then that", in veripb's notation.
 
     `g1 g2 ==> 1 xx >= 1` is one pseudo-Boolean constraint and not two: the
-    checker reads the arrow and carries each guess's negation into the row at
-    the degree, so what it ends up with here is "~g1 or ~g2 or xx".  We could
-    write that row out ourselves and not a thing about the checking would
-    change.  The arrow is here because a proof is for reading, and this way a
-    line of it says what the propagator meant rather than what it normalises
-    to.
+    checker reads the arrow and carries each guess's negation into the
+    constraint at the degree, so what it ends up with here is "~g1 or ~g2 or
+    xx".  We could write that out ourselves and not a thing about the checking
+    would change.  The arrow is here because a proof is for reading, and this
+    way a line of it says what the propagator meant rather than what it
+    normalises to.
 
     With nothing to be conditional on there is no arrow, and the consequent
     stands by itself.
@@ -109,12 +109,13 @@ class ProofLog(NoProof):
 
         That is a consequence of what the direct atoms mean rather than
         something the model says, so the .opb does not assert it and we derive
-        it here.  Adding up the rows that define x = v for each v in turn makes
-        every order atom cancel against its own negation, and the telescope
-        collapses to exactly this.  all_different needs it; nothing else does.
+        it here.  Adding up the constraints that define x = v, for each v in
+        turn, makes every order atom cancel against its own negation, and the
+        telescope collapses to exactly this.  all_different needs it; nothing
+        else does.
         """
         self.comment("every variable takes at least one value, by telescoping")
-        self.comment("the rows that define its direct atoms")
+        self.comment("the constraints that define its direct atoms")
         for x in model.variables:
             steps = [f"@x{x.index}eq0_dn"]
             for v in range(1, x.ub + 1):
@@ -136,7 +137,8 @@ class ProofLog(NoProof):
         Nothing needs claiming here.  The line the search writes at the bottom
         of a dead node says exactly this and says it as a rup, so a propagator
         that could have made the claim by rup need not say anything at all, and
-        one that needs cutting planes only has to leave the right row behind.
+        one that needs cutting planes only has to leave the right constraint
+        behind.
         """
         if not self.justifications:
             return

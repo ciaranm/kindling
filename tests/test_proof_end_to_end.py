@@ -188,7 +188,8 @@ class TestTheWrongAnswerFails(unittest.TestCase):
             self.rejects("pigeonhole")
 
     def channelling_stuck(self, direction: str):
-        """Every channelling row taken in the same direction, right or wrong."""
+        """Every channelling constraint taken in the same direction, right or
+        wrong."""
         original = IntLinLe.channelling
         other = "_up" if direction == "_dn" else "_dn"
         return mock.patch.object(
@@ -199,11 +200,11 @@ class TestTheWrongAnswerFails(unittest.TestCase):
             ),
         )
 
-    def test_a_positive_coefficient_needs_the_up_row(self):
+    def test_a_positive_coefficient_needs_the_up_constraint(self):
         with self.channelling_stuck("_dn"):
             self.rejects("tight-sum")
 
-    def test_a_negative_coefficient_needs_the_dn_row(self):
+    def test_a_negative_coefficient_needs_the_dn_constraint(self):
         with self.channelling_stuck("_up"):
             self.rejects("over-budget")
 
