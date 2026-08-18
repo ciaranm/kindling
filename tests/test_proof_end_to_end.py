@@ -90,7 +90,26 @@ class TestProofShape(unittest.TestCase):
             with self.subTest(instance=name):
                 for line in prove(INSTANCES[name]())[2].splitlines():
                     if line.startswith("a "):
-                        self.assertRegex(line, r": : [a-z_]+ ;$")
+                        # The name, and then optionally the free-text hint,
+                        # which veripb allows anything in but a "%" or a ";".
+                        self.assertRegex(line, r": : [a-z_]+( : [^;%]+)? ;$")
+
+    def test_the_hall_assertion_says_which_set_would_not_fit(self):
+        """squeeze is three variables stuck in two values plus a fourth that is
+        fine, so a hint naming the whole scope would be no hint at all.
+
+        Which set it was is the one thing a reader cannot get back out of the
+        proof: the line says only that some set did not fit, and by the time
+        anybody reads it the propagator that knew is long gone.
+
+        Like the test above, this has nothing to say once exercise 3 is done
+        and there are no assertions left to annotate.
+        """
+        for line in prove(INSTANCES["squeeze"]())[2].splitlines():
+            if "all_different_hall" in line:
+                self.assertEqual(
+                    line, "a >= 1 : : all_different_hall : x1, x2, x3 in {0, 1} ;"
+                )
 
 
 

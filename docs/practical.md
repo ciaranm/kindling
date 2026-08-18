@@ -135,6 +135,18 @@ constraints up.
 Write `hall_steps` in `kindling/constraints/all_different_int.py`, and swap the
 `Assert` in `propagate` for `Pol(self.hall_steps(variables, values))`.
 
+You do not have to work out which set it found. The assertion carries it, in
+the free-text field VeriPB sets aside for notes to whoever reads the proof
+next:
+
+```
+a >= 1 : : all_different_hall : x1, x2, x3 in {0, 1} ;
+```
+
+so `S` and `U` can be read straight off the line you are replacing. Nothing
+checks that hint, which is the same warning that applies to the assertion in
+front of it.
+
 The constraints you have to work with, for a set `S` of variables and the set
 `U` of values they are stuck inside:
 
