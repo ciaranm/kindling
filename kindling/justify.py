@@ -49,9 +49,20 @@ class Assert:
     assertions themselves, reporting UNDER ASSERTIONS rather than VERIFIED.
 
     The name is carried into the proof as an annotation, so that the burn-down
-    can say what is left to do."""
+    can say what is left to do.  The hint is carried beside it and says what
+    this particular assertion was about.  An assertion is a claim with its
+    working thrown away, and the working is exactly what you want back when the
+    job in front of you is to replace it with a derivation: the propagator knew
+    which variables and which values it was talking about, and nobody reading
+    the line afterwards can recover them.
+
+    Free text as far as veripb is concerned -- any character but "%" and ";" --
+    so it is for a person, or for somebody else's justifier, and never for the
+    checker.  Nothing about the proof changes if it is wrong, which is the same
+    warning that applies to the assertion above it."""
 
     name: str
+    hint: str = ""
 
 
 
