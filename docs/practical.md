@@ -15,6 +15,18 @@ agreed with every line except the ones that said "trust me". `REJECTED` means
 something in it is *wrong*. Watch which one you get; they mean quite different
 things and you will meet both.
 
+Each of those "trust me" lines says what it was about, after its name, in a
+field VeriPB parses and then ignores:
+
+```
+a 1 ~x2eq1 >= 1 : : table_support : c1: x2 = 1 is in no tuple that is left ;
+a >= 1 : : all_different_hall : x1, x2, x3 in {0, 1} ;
+```
+
+Nothing checks that text — it is a note from the propagator, which knew which
+constraint and which values it was talking about, to whoever has to turn the
+line into a derivation.
+
 Your feedback loop is:
 
 ```
@@ -135,17 +147,13 @@ constraints up.
 Write `hall_steps` in `kindling/constraints/all_different_int.py`, and swap the
 `Assert` in `propagate` for `Pol(self.hall_steps(variables, values))`.
 
-You do not have to work out which set it found. The assertion carries it, in
-the free-text field VeriPB sets aside for notes to whoever reads the proof
-next:
+You do not have to work out which set it found. The assertion carries it:
 
 ```
 a >= 1 : : all_different_hall : x1, x2, x3 in {0, 1} ;
 ```
 
-so `S` and `U` can be read straight off the line you are replacing. Nothing
-checks that hint, which is the same warning that applies to the assertion in
-front of it.
+so `S` and `U` below can be read straight off the line you are replacing.
 
 The constraints you have to work with, for a set `S` of variables and the set
 `U` of values they are stuck inside:
