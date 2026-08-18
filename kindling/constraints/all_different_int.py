@@ -80,6 +80,25 @@ class AllDifferentInt(Constraint):
                 return sorted(variables, key=lambda x: x.index), values
         return None
 
+    def hall_hint(self, variables, values) -> str:
+        """Which variables, and which values, for the assertion to carry.
+
+        An assertion says "trust me" and stops, which is the least helpful
+        thing it could say to the next person along, whose job is to turn it
+        into a derivation.  These two lists are what that derivation gets built
+        out of, and the propagator is the only thing that ever knew them: by
+        the time the proof is on disk the set that would not fit is gone, and
+        no amount of staring at "a x1eq0 ==> >= 1" brings it back.
+
+        veripb neither reads this nor cares, and a wrong one costs nothing and
+        catches nothing.  It is a note to a human, in the field veripb set
+        aside for notes.
+        """
+        return (
+            f"{', '.join(str(x) for x in variables)} "
+            f"in {{{', '.join(str(v) for v in values)}}}"
+        )
+
     def hall_steps(self, variables, values) -> tuple[str, ...]:
         """EXERCISE 3.  Cutting planes for "these variables will not fit in
         these values".
@@ -100,5 +119,6 @@ class AllDifferentInt(Constraint):
             # A variable with nothing left at all.  There is no set of values to
             # argue about, and the node's own line already sees the problem.
             return state.fail(Rup())
-        del variables  # until exercise 3 is done
-        return state.fail(Assert("all_different_hall"))
+        return state.fail(
+            Assert("all_different_hall", self.hall_hint(variables, values))
+        )
