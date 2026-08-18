@@ -280,6 +280,15 @@ def check(basename: str) -> int:
         return 0
     if "s UNDER ASSERTIONS" in text:
         print("veripb: UNDER ASSERTIONS -- everything checked except what we asserted")
+        if shutil.which("veripb-repl") is not None:
+            # Where to work the missing derivation out before writing the code
+            # that emits it.  Only said when the repl is actually there: it is
+            # new and on a branch, and pointing at a command that does not
+            # exist is worse than saying nothing.
+            print(
+                f"  to work one of them out: veripb-repl {basename}.opb, then "
+                f":source {basename}.pbp and :deassert"
+            )
         return 1
     print("veripb: REJECTED. It said:", file=sys.stderr)
     print(text.strip(), file=sys.stderr)
