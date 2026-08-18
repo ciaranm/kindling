@@ -85,14 +85,19 @@ class TestProofShape(unittest.TestCase):
         self.assertNotIn("decide", pbp)
         self.assertEqual(pbp.count("rup"), 1)
 
-    def test_every_assertion_says_which_propagator_left_it(self):
+    def test_every_assertion_says_which_propagator_left_it_and_what_it_found(self):
+        """A name, which is a category, and then free text, which is the thing
+        itself.  veripb allows anything in the free text but a "%" or a ";".
+
+        Every assertion the solver can still write has something to say, so an
+        empty hint means somebody added an assertion and did not think about
+        who would read it.
+        """
         for name in INSTANCES:
             with self.subTest(instance=name):
                 for line in prove(INSTANCES[name]())[2].splitlines():
                     if line.startswith("a "):
-                        # The name, and then optionally the free-text hint,
-                        # which veripb allows anything in but a "%" or a ";".
-                        self.assertRegex(line, r": : [a-z_]+( : [^;%]+)? ;$")
+                        self.assertRegex(line, r": : [a-z_]+ : [^;%]+ ;$")
 
     def test_the_hall_assertion_says_which_set_would_not_fit(self):
         """squeeze is three variables stuck in two values plus a fourth that is
