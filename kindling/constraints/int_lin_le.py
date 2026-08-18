@@ -116,7 +116,13 @@ class IntLinLe(Constraint):
             # Even at their smallest these terms overshoot.  Adding every bound
             # to @lin leaves something that cannot be satisfied.
             if not derivable:
-                return state.fail(Assert("int_lin_le_negative_coefficient"))
+                return state.fail(
+                    Assert(
+                        "int_lin_le_negative_coefficient",
+                        f"@lin{self.index} allows {self.rhs}, and the terms are "
+                        f"at least {total}",
+                    )
+                )
             return state.fail(Pol(tuple(self.steps(bounds) + ["s"])))
 
         result = Inference.NO_CHANGE
@@ -135,7 +141,15 @@ class IntLinLe(Constraint):
                     )
                 )
                 if derivable
-                else Assert("int_lin_le_negative_coefficient")
+                # Which of the model's inequalities did this, and what it had
+                # left over once the other terms had taken their share.  A
+                # model with five int_lin_le in it writes the same line five
+                # different ways, and this is what tells them apart.
+                else Assert(
+                    "int_lin_le_negative_coefficient",
+                    f"@lin{self.index} allows {self.rhs}, and the other terms "
+                    f"are at least {total - smallest[i]}",
+                )
             )
             if self.coefficients[i] > 0:
                 result = max(result, state.set_upper_bound(x, budget, because))

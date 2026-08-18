@@ -81,13 +81,26 @@ class TableInt(Constraint):
             # me" rather than giving the checker anything to check.  They can
             # both be Rup(), because this constraint's reasoning really is
             # reverse unit propagation -- see docs/practical.md.
-            return state.fail(Assert("table_no_tuple"))
+            return state.fail(
+                Assert(
+                    "table_no_tuple",
+                    f"c{self.index}: none of its {len(self.tuples)} tuples is left",
+                )
+            )
 
         result = Inference.NO_CHANGE
         for position, x in enumerate(self.scope):
             for v in list(state.domain(x)):
                 if v not in supported[position]:
-                    result = max(result, state.remove(x, v, Assert("table_support")))
+                    # Which table, and which value of which variable: the line
+                    # itself says neither, and with two tables over the same
+                    # pair of variables there is nothing else to tell them
+                    # apart.
+                    because = Assert(
+                        "table_support",
+                        f"c{self.index}: {x} = {v} is in no tuple that is left",
+                    )
+                    result = max(result, state.remove(x, v, because))
                     if result is Inference.CONTRADICTION:
                         return result
         return result
