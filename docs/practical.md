@@ -5,8 +5,9 @@ tell you so:
 
 ```
 $ python3 -m kindling pigeonhole --prove /tmp/ph --check
+wrote /tmp/ph.opb and /tmp/ph.pbp
+1 unjustified inferences: 1 x all_different_hall
 unsatisfiable
-2 unjustified inferences: 2 x all_different_hall
 veripb: UNDER ASSERTIONS -- everything checked except what we asserted
 ```
 
@@ -79,6 +80,55 @@ out again by itself, so a proof that never mentions any of it is still a proof.
 The second does not verify, and `veripb --trace-failed /tmp/t.opb /tmp/t.pbp`
 will show you how far the checker got before it ran out of things to propagate.
 The gap between those two runs is what the rest of this is about.
+
+## Work the derivation out before you write the code
+
+Every exercise below has the same two halves: decide what the proof line should
+have said, and then write the propagator that emits it. The first half is the
+hard one, and the solver is not much help with it — you edit Python, rerun the
+whole thing, and read a verdict about a file you never typed a line of.
+
+VeriPB's REPL hands you the assertion and lets you type the replacement
+straight in. Here is exercise 1, which you are about to be told the answer to
+anyway:
+
+```
+$ python3 -m kindling two-tables --prove /tmp/tt
+$ veripb-repl /tmp/tt.opb
+pbp> :source /tmp/tt.pbp
+    (replays the proof, ending in)
+s UNDER ASSERTIONS UNSATISFIABLE
+pbp> :deassert
+Line 9: a x1eq0 ==> 1 ~x2eq1 >= 1 : : table_support : c1: x2 = 1 is in no tuple that is left ;
+edit> rup x1eq0 ==> 1 ~x2eq1 >= 1 ;
+  ConstraintId 25: 1 ~x1eq0 1 ~x2eq1 >= 1
+edit> :done
+```
+
+`:deassert` takes the first `a` line, deletes it, and accepts replacement lines
+until you type `:done` — as many as it takes, since a derivation is not one
+line by nature. Then it replays the rest of the proof on top of what you typed,
+so you find out at once whether everything after it still follows. `:deassert
+n` picks a particular line, once you are tired of the first one.
+
+Three things it does that a rerun does not:
+
+* **It prints what you derived.** In exercise 3, leave the weakening out of
+  your sum and you get a constraint too — a different one — and the proof still
+  verifies. That question is asked below, and this is how you answer it: read
+  the constraint back and see what it says.
+* **A line that will not parse costs nothing.** It is rejected on the spot, the
+  session is untouched, and you type it again.
+* **A line that parses but is too weak fails somewhere else.** What breaks is
+  the *next* line's `rup`, and you get the checker's trail to read — the same
+  lesson as the bug hunt at the end, that a proof names where you claimed
+  something and that is rarely where the problem is.
+
+Then go and write the propagator, knowing what it has to emit.
+
+The REPL is new and it is on a branch. Everything below works without it —
+`veripb --trace-failed` does a coarser version of the same job — but if you
+have it, start there.
 
 ## Exercise 1: table
 
