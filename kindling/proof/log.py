@@ -153,7 +153,13 @@ class ProofLog(NoProof):
     def claim(self, constraint: str, because) -> None:
         if isinstance(because, Assert):
             self.assertions.append(because.name)
-            self.write(f"a {constraint} : : {because.name} ;")
+            # veripb gives an assertion three annotation fields -- antecedent
+            # ids, a name, and free text -- and the last two are the ones we
+            # have anything to say in.  A hint with nothing in it is left off
+            # the line entirely rather than written empty, so that a line with
+            # nothing to add does not read like a line whose hint went missing.
+            hint = f" : {because.hint}" if because.hint else ""
+            self.write(f"a {constraint} : : {because.name}{hint} ;")
         else:
             self.write(f"rup {constraint} ;")
 
