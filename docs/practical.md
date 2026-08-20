@@ -66,7 +66,9 @@ needs to say, and `rup >= 1 ;` is that line with the last guess gone too.
 
 Then look at `/tmp/ag.opb`, which says what the problem means. Most of it is
 the encoding of the variables — every integer gets bits, a literal for each
-`>= v`, and a literal for each `= v`, all written out in full.
+`>= v`, and a literal for each `= v`, all written out in full. The same arrows
+turn up there, saying what each of those literals means, and a line with two
+labels on it is one arrow standing for two constraints.
 
 There is a switch for leaving the propagators out of the proof altogether:
 
@@ -164,25 +166,28 @@ clause we wanted.
 
 The reference handles positive coefficients. A negative one needs the same sum
 with one thing changed, because a term that counts downwards needs its variable
-bounded from the other side. Look at `channelling`, and at the two constraints
-any variable has in the `.opb`:
+bounded from the other side. Look at `channelling`, and at the line defining
+any variable's order literals in the `.opb`:
+
+```
+@x1ge3_up @x1ge3_dn x1ge3 <==> 4 x1b2 2 x1b1 1 x1b0 >= 3 ;
+```
+
+That is the definition, in both directions at once: the literal being true
+forces the bits up, and the bits being big enough force the literal. It is one
+line and two constraints, and it carries a label for each of them —
+`@x1ge3_up` is the `==>` half and `@x1ge3_dn` is the `<==` half.
+
+Adding one of them to `@lin{c}` means adding what VeriPB stored, which is the
+arrow with the reified literal carried in at the degree:
 
 ```
 @x1ge3_up 4 x1b2 2 x1b1 1 x1b0 3 ~x1ge3 >= 3 ;
 @x1ge3_dn 4 ~x1b2 2 ~x1b1 1 ~x1b0 5 x1ge3 >= 5 ;
 ```
 
-Those two are the arrow constraints
-
-```
-x1ge3 ==> 4 x1b2 2 x1b1 1 x1b0 >= 3
-x1ge3 <== 4 x1b2 2 x1b1 1 x1b0 >= 3
-```
-
-spelled out the long way round, because VeriPB implements the arrow in proof
-files but not in `.opb` files yet. Read them as the definitions they are: the
-literal being true forces the bits up, and the bits being big enough forces
-the literal. The `.opb` says so in a comment above every variable's block.
+Which of those two cancels the bits away depends on which way your coefficient
+counts.
 
 Make `over-budget` verify. Getting it wrong gives `REJECTED` rather than
 `UNDER ASSERTIONS`, so you will know.

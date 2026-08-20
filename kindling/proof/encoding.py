@@ -52,46 +52,33 @@ def define_variable(opb: OpbFile, index: int, ub: int, name: str = "") -> None:
         opb.constraint(f"x{index}_ub", bits(index, ub), "<=", ub)
 
     opb.comment()
-    opb.comment(f"x{index}ge{{v}} means x{index} >= v.  veripb accepts reification")
-    opb.comment("arrows in proof files but not in .opb files, so the two constraints")
-    opb.comment("per value below are the big-M spelling of what we would rather write:")
-    opb.comment(f"    x{index}ge{{v}} ==> {value} >= v      (_up)")
-    opb.comment(f"    x{index}ge{{v}} <== {value} >= v      (_dn)")
+    opb.comment(f"x{index}ge{{v}} means x{index} >= v, in both directions at once.")
+    opb.comment(f"Each line is two constraints: _up is x{index}ge{{v}} ==> {value} >= v,")
+    opb.comment(f"and _dn is x{index}ge{{v}} <== {value} >= v.")
     for v in range(1, ub + 1):
-        # x{i}ge{v} -> x{i} >= v.  If the literal is false, v pays the degree.
-        opb.constraint(
-            f"x{index}ge{v}_up", bits(index, ub) + [(v, neg(ge(index, v)))], ">=", v
-        )
-        # x{i} >= v -> x{i}ge{v}, said on the "ceiling - x" side so that every
-        # coefficient stays positive.
-        opb.constraint(
-            f"x{index}ge{v}_dn",
-            bits(index, ub, negated=True) + [(ceiling - v + 1, ge(index, v))],
-            ">=",
-            ceiling - v + 1,
+        opb.reified(
+            [f"x{index}ge{v}_up", f"x{index}ge{v}_dn"],
+            ge(index, v),
+            "<==>",
+            bits(index, ub),
+            v,
         )
 
     opb.comment(f"x{index}eq{{v}} means x{index} = v, which is x{index}ge{{v}} and not x{index}ge{{v+1}}")
+    opb.comment("A conjunction is a pseudo-Boolean constraint too: asking for all")
+    opb.comment("of n literals is asking for their sum to be at least n.")
     for v in range(0, ub + 1):
         conjuncts = []
         if v > 0:
             conjuncts.append(ge(index, v))
         if v < ub:
             conjuncts.append(neg(ge(index, v + 1)))
-        # x{i}eq{v} -> each conjunct
-        for j, literal in enumerate(conjuncts):
-            opb.constraint(
-                f"x{index}eq{v}_up{j}",
-                [(1, neg(eq(index, v))), (1, literal)],
-                ">=",
-                1,
-            )
-        # all the conjuncts together -> x{i}eq{v}
-        opb.constraint(
-            f"x{index}eq{v}_dn",
-            [(1, eq(index, v))] + [(1, neg(c)) for c in conjuncts],
-            ">=",
-            1,
+        opb.reified(
+            [f"x{index}eq{v}_up", f"x{index}eq{v}_dn"],
+            eq(index, v),
+            "<==>",
+            [(1, literal) for literal in conjuncts],
+            len(conjuncts),
         )
 
 
