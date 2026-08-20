@@ -52,13 +52,16 @@ class TableInt(Constraint):
                 opb.comment(f"tuple {j} = {values} is outside the domains")
                 opb.constraint(f"tbl{self.index}t{j}_dead", [(1, neg(sel))], ">=", 1)
                 continue
-            for x, v in zip(self.scope, values):
-                opb.constraint(
-                    f"tbl{self.index}t{j}_{x.index}",
-                    [(1, neg(sel)), (1, eq(x.index, v))],
-                    ">=",
-                    1,
-                )
+            # Using this tuple means every variable takes its value from it,
+            # which is a conjunction, which is a constraint asking for all of
+            # them at once.
+            opb.reified(
+                [f"tbl{self.index}t{j}"],
+                sel,
+                "==>",
+                [(1, eq(x.index, v)) for x, v in zip(self.scope, values)],
+                len(self.scope),
+            )
 
     def supports(self, state) -> tuple[list[set[int]], int]:
         """Which values each variable could still take, and how many tuples are

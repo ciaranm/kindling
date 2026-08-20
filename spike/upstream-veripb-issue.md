@@ -1,4 +1,9 @@
-# Draft issue for VeriPB — not yet filed
+# Draft issue for VeriPB — superseded
+
+*Never filed as an issue: it became VeriPB MR !216, merged into `main` on
+2026-08-20 as `89281e15`, which implements the arrows and `<==>` in the OPB
+file and lets a line carry one label per constraint it stands for. Kept for
+the analysis of where the gap was.*
 
 Written against `main` @ `f8c29244`, checked with the `veripb 3.0.2` binary.
 Intended to be actionable enough for a first implementation pass.
