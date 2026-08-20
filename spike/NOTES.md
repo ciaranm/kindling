@@ -107,7 +107,9 @@ constraint it wants, and the exercise is deriving it instead of asserting it.
 
 ## Two upstream bugs found
 
-1. **Reification shorthands do not work in `.opb` files**, though
+1. **Reification shorthands do not work in `.opb` files** — *fixed upstream on
+   2026-08-20, VeriPB `main` `89281e15`; kindling's `.opb` uses the arrows now.*
+   Though
    `proof_format_overview.md` says they "can be used anywhere an OPB-style
    constraint is expected". The doc's own example, `z1 z2 ~z3 ==> +1 x1 +2 x2 >= 2;`,
    is rejected verbatim in a `.opb` and accepted in a `.pbp`. `OPBToken` has no
@@ -120,10 +122,9 @@ constraint it wants, and the exercise is deriving it instead of asserting it.
    not implied but `~z1 ~z2 x1` is. A disjunctive antecedent could not be one PB
    constraint anyway.
 
-Until (1) is fixed the channelling constraints are written as their big-M
-forms, with the arrow form they stand for in a comment above each variable's
-block. The arrow form in the `.pbp` normalises to exactly the same constraint:
-deriving the `01-linear` clause entirely through arrow-introduced channelling
-constraints gives the identical result, and fails identically without the
-`pol`. So the split is between the two files rather than between two notations:
-the `.pbp` says what it means, and the `.opb` will too once (1) lands.
+The spike's own files keep the big-M forms, which is what they were checked
+with; the solver writes the arrows. Nothing is lost by either choice, because
+the arrow normalises to exactly the same constraint: deriving the `01-linear`
+clause entirely through arrow-introduced channelling constraints gives the
+identical result, and fails identically without the `pol`. The split was never
+between two notations, only between two files, and it has now closed.

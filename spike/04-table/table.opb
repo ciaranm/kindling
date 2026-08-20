@@ -2,8 +2,8 @@
 * --- x1 in [0, 1] ---
 * x1 = 1*x1b0
 * order literals: x1ge{v} means x1 >= v, channelled to the bits both ways.
-* veripb accepts arrow syntax in .pbp files but not in .opb files, so these
-* are the big-M forms of what we would rather have written as
+* these are the big-M forms of what the solver, which came later,
+* writes with veripb's arrow syntax as
 *     x1ge{v} ==> 1 x1b0 >= v      (_up)
 *     x1ge{v} <== 1 x1b0 >= v      (_dn)
 @x1ge1_up 1 x1b0 1 ~x1ge1 >= 1 ;
@@ -16,8 +16,8 @@
 * --- x2 in [0, 1] ---
 * x2 = 1*x2b0
 * order literals: x2ge{v} means x2 >= v, channelled to the bits both ways.
-* veripb accepts arrow syntax in .pbp files but not in .opb files, so these
-* are the big-M forms of what we would rather have written as
+* these are the big-M forms of what the solver, which came later,
+* writes with veripb's arrow syntax as
 *     x2ge{v} ==> 1 x2b0 >= v      (_up)
 *     x2ge{v} <== 1 x2b0 >= v      (_dn)
 @x2ge1_up 1 x2b0 1 ~x2ge1 >= 1 ;

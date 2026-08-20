@@ -43,8 +43,8 @@ def variable_constraints(i, ub):
     out += [
         f"* order literals: x{i}ge{{v}} means x{i} >= v, channelled to the"
         " bits both ways.",
-        "* veripb accepts arrow syntax in .pbp files but not in .opb files, so these",
-        "* are the big-M forms of what we would rather have written as",
+        "* these are the big-M forms of what the solver, which came later,",
+        "* writes with veripb's arrow syntax as",
         f"*     x{i}ge{{v}} ==> {bit_sum(i, ub)} >= v      (_up)",
         f"*     x{i}ge{{v}} <== {bit_sum(i, ub)} >= v      (_dn)",
     ]
