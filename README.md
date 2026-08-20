@@ -16,10 +16,17 @@ python3 -m kindling pigeonhole --prove /tmp/ph --check
 veripb /tmp/ph.opb /tmp/ph.pbp
 ```
 
-Nothing needs installing. There are no dependencies, the tests use only what
-comes with Python, and the only external program involved is
+Nothing needs installing on the Python side: there are no dependencies and the
+tests use only what comes with Python. The one external program is
 [VeriPB](https://gitlab.com/MIAOresearch/software/VeriPB), which checks the
-proofs and which you will already have.
+proofs.
+
+The `.opb` files kindling writes use the `<==>` reification shorthand, which is
+newer than the 3.0.2 release, so VeriPB has to be built from its `main`:
+
+```
+cargo install --git https://gitlab.com/MIAOresearch/software/VeriPB.git --bin veripb veripb
+```
 
 If you have MiniZinc, kindling is a solver it can drive:
 
