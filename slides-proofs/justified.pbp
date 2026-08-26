@@ -1,0 +1,30 @@
+pseudo-Boolean proof version 3.0
+% every variable takes at least one value, by telescoping
+% the constraints that define its direct literals
+@atleast1 pol @x1eq0_dn @x1eq1_dn + ;
+@atleast2 pol @x2eq0_dn @x2eq1_dn + @x2eq2_dn + ;
+@atleast3 pol @x3eq0_dn @x3eq1_dn + @x3eq2_dn + ;
+@atleast4 pol @x4eq0_dn @x4eq1_dn + @x4eq2_dn + ;
+%
+% decide x1 = 0
+pol @lin3 @x1ge1_dn + @x2ge2_up + s ;
+rup x1eq0 ==> 1 ~x2ge2 >= 1 ;
+pol @lin3 @x1ge1_dn + @x3ge2_up + s ;
+rup x1eq0 ==> 1 ~x3ge2 >= 1 ;
+pol @lin3 @x1ge1_dn + @x4ge2_up + s ;
+rup x1eq0 ==> 1 ~x4ge2 >= 1 ;
+pol @amo1_0 @amo1_1 + @atleast2 + @atleast3 + @atleast4 + ;
+rup x1eq0 ==> >= 1 ;
+% decide x1 != 0
+pol @lin2 @x1ge1_up + @x2ge2_up + s ;
+rup ~x1eq0 ==> 1 ~x2ge2 >= 1 ;
+pol @lin2 @x1ge1_up + @x3ge2_up + s ;
+rup ~x1eq0 ==> 1 ~x3ge2 >= 1 ;
+pol @lin2 @x1ge1_up + @x4ge2_up + s ;
+rup ~x1eq0 ==> 1 ~x4ge2 >= 1 ;
+pol @amo1_0 @amo1_1 + @atleast2 + @atleast3 + @atleast4 + ;
+rup ~x1eq0 ==> >= 1 ;
+rup >= 1 ;
+output NONE;
+conclusion UNSAT;
+end pseudo-Boolean proof;

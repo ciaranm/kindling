@@ -1,0 +1,64 @@
+* kindling proof model
+*
+* 3 variables, 1 constraints
+*
+* --- x1 in [0, 2], the model's x1 ---
+* x1 = 2*x1b1 + 1*x1b0
+@x1_ub 2 x1b1 1 x1b0 <= 2 ;
+*
+* x1ge{v} means x1 >= v, in both directions at once.
+* Each line is two constraints: _up is x1ge{v} ==> 2*x1b1 + 1*x1b0 >= v,
+* and _dn is x1ge{v} <== 2*x1b1 + 1*x1b0 >= v.
+@x1ge1_up @x1ge1_dn x1ge1 <==> 2 x1b1 1 x1b0 >= 1 ;
+@x1ge2_up @x1ge2_dn x1ge2 <==> 2 x1b1 1 x1b0 >= 2 ;
+* x1eq{v} means x1 = v, which is x1ge{v} and not x1ge{v+1}
+* A conjunction is a pseudo-Boolean constraint too: asking for all
+* of n literals is asking for their sum to be at least n.
+@x1eq0_up @x1eq0_dn x1eq0 <==> 1 ~x1ge1 >= 1 ;
+@x1eq1_up @x1eq1_dn x1eq1 <==> 1 x1ge1 1 ~x1ge2 >= 2 ;
+@x1eq2_up @x1eq2_dn x1eq2 <==> 1 x1ge2 >= 1 ;
+*
+* --- x2 in [0, 3], the model's x2 ---
+* x2 = 2*x2b1 + 1*x2b0
+*
+* x2ge{v} means x2 >= v, in both directions at once.
+* Each line is two constraints: _up is x2ge{v} ==> 2*x2b1 + 1*x2b0 >= v,
+* and _dn is x2ge{v} <== 2*x2b1 + 1*x2b0 >= v.
+@x2ge1_up @x2ge1_dn x2ge1 <==> 2 x2b1 1 x2b0 >= 1 ;
+@x2ge2_up @x2ge2_dn x2ge2 <==> 2 x2b1 1 x2b0 >= 2 ;
+@x2ge3_up @x2ge3_dn x2ge3 <==> 2 x2b1 1 x2b0 >= 3 ;
+* x2eq{v} means x2 = v, which is x2ge{v} and not x2ge{v+1}
+* A conjunction is a pseudo-Boolean constraint too: asking for all
+* of n literals is asking for their sum to be at least n.
+@x2eq0_up @x2eq0_dn x2eq0 <==> 1 ~x2ge1 >= 1 ;
+@x2eq1_up @x2eq1_dn x2eq1 <==> 1 x2ge1 1 ~x2ge2 >= 2 ;
+@x2eq2_up @x2eq2_dn x2eq2 <==> 1 x2ge2 1 ~x2ge3 >= 2 ;
+@x2eq3_up @x2eq3_dn x2eq3 <==> 1 x2ge3 >= 1 ;
+*
+* --- x3 in [0, 5], the model's x3 ---
+* x3 = 4*x3b2 + 2*x3b1 + 1*x3b0
+@x3_ub 4 x3b2 2 x3b1 1 x3b0 <= 5 ;
+*
+* x3ge{v} means x3 >= v, in both directions at once.
+* Each line is two constraints: _up is x3ge{v} ==> 4*x3b2 + 2*x3b1 + 1*x3b0 >= v,
+* and _dn is x3ge{v} <== 4*x3b2 + 2*x3b1 + 1*x3b0 >= v.
+@x3ge1_up @x3ge1_dn x3ge1 <==> 4 x3b2 2 x3b1 1 x3b0 >= 1 ;
+@x3ge2_up @x3ge2_dn x3ge2 <==> 4 x3b2 2 x3b1 1 x3b0 >= 2 ;
+@x3ge3_up @x3ge3_dn x3ge3 <==> 4 x3b2 2 x3b1 1 x3b0 >= 3 ;
+@x3ge4_up @x3ge4_dn x3ge4 <==> 4 x3b2 2 x3b1 1 x3b0 >= 4 ;
+@x3ge5_up @x3ge5_dn x3ge5 <==> 4 x3b2 2 x3b1 1 x3b0 >= 5 ;
+* x3eq{v} means x3 = v, which is x3ge{v} and not x3ge{v+1}
+* A conjunction is a pseudo-Boolean constraint too: asking for all
+* of n literals is asking for their sum to be at least n.
+@x3eq0_up @x3eq0_dn x3eq0 <==> 1 ~x3ge1 >= 1 ;
+@x3eq1_up @x3eq1_dn x3eq1 <==> 1 x3ge1 1 ~x3ge2 >= 2 ;
+@x3eq2_up @x3eq2_dn x3eq2 <==> 1 x3ge2 1 ~x3ge3 >= 2 ;
+@x3eq3_up @x3eq3_dn x3eq3 <==> 1 x3ge3 1 ~x3ge4 >= 2 ;
+@x3eq4_up @x3eq4_dn x3eq4 <==> 1 x3ge4 1 ~x3ge5 >= 2 ;
+@x3eq5_up @x3eq5_dn x3eq5 <==> 1 x3ge5 >= 1 ;
+*
+* table(x1, x2, x3) with 3 tuples
+@tbl1_sel 1 c1t0 1 c1t1 1 c1t2 >= 1 ;
+@tbl1t0 c1t0 ==> 1 x1eq1 1 x2eq2 1 x3eq3 >= 3 ;
+@tbl1t1 c1t1 ==> 1 x1eq1 1 x2eq3 1 x3eq4 >= 3 ;
+@tbl1t2 c1t2 ==> 1 x1eq2 1 x2eq2 1 x3eq5 >= 3 ;

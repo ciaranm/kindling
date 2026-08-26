@@ -1,0 +1,32 @@
+pseudo-Boolean proof version 3.0
+% every variable takes at least one value, by telescoping
+% the constraints that define its direct literals
+@atleast1 pol @x1eq0_dn @x1eq1_dn + ;
+@atleast2 pol @x2eq0_dn @x2eq1_dn + @x2eq2_dn + ;
+@atleast3 pol @x3eq0_dn @x3eq1_dn + @x3eq2_dn + ;
+@atleast4 pol @x4eq0_dn @x4eq1_dn + @x4eq2_dn + ;
+%
+% decide x1 = 0
+% decide x2 = 0
+% decide x3 = 0
+rup x1eq0 x2eq0 x3eq0 ==> >= 1 ;
+% decide x3 != 0
+rup x1eq0 x2eq0 ~x3eq0 ==> >= 1 ;
+rup x1eq0 x2eq0 ==> >= 1 ;
+% decide x2 != 0
+rup x1eq0 ~x2eq0 ==> >= 1 ;
+rup x1eq0 ==> >= 1 ;
+% decide x1 != 0
+% decide x2 = 0
+% decide x3 = 0
+rup ~x1eq0 x2eq0 x3eq0 ==> >= 1 ;
+% decide x3 != 0
+rup ~x1eq0 x2eq0 ~x3eq0 ==> >= 1 ;
+rup ~x1eq0 x2eq0 ==> >= 1 ;
+% decide x2 != 0
+rup ~x1eq0 ~x2eq0 ==> >= 1 ;
+rup ~x1eq0 ==> >= 1 ;
+rup >= 1 ;
+output NONE;
+conclusion UNSAT;
+end pseudo-Boolean proof;

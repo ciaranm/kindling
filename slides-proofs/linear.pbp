@@ -1,0 +1,7 @@
+pseudo-Boolean proof version 3.0
+% x1 + x2 + x3 <= 9, with x2 >= 3 and x3 >= 3 already established, so x1 <= 3
+pol @lin1 @x2ge3_up + @x3ge3_up + @x1ge4_up + ;
+rup x2ge3 x3ge3 ==> 1 ~x1ge4 >= 1 ;
+output NONE;
+conclusion NONE;
+end pseudo-Boolean proof;
